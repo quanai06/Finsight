@@ -1,0 +1,427 @@
+% !TEX program = xelatex
+% Biên dịch: xelatex finsight_ke_hoach.tex  (chạy 2 lần để cập nhật mục lục)
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{fontspec}        % XeLaTeX: hỗ trợ UTF-8 tiếng Việt sẵn (font Latin Modern)
+\usepackage[a4paper,margin=2.3cm]{geometry}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{fsblue}{RGB}{20,80,140}
+\definecolor{fsgray}{RGB}{90,90,90}
+\definecolor{fslight}{RGB}{238,243,250}
+
+\hypersetup{colorlinks=true, linkcolor=fsblue, urlcolor=fsblue}
+
+\titleformat{\section}{\Large\bfseries\color{fsblue}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\large\bfseries\color{fsblue!85!black}}{\thesubsection}{0.6em}{}
+
+\setlist[itemize]{leftmargin=1.4em, itemsep=2pt, topsep=2pt}
+\setlist[enumerate]{leftmargin=1.6em, itemsep=2pt, topsep=2pt}
+
+\newcommand{\pha}[1]{\subsection{#1}}
+\newtcolorbox{ghichu}{colback=fslight, colframe=fsblue, boxrule=0.6pt, arc=2pt,
+  left=6pt, right=6pt, top=4pt, bottom=4pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small\color{fsgray} FinSight}
+\rhead{\small\color{fsgray} Kế hoạch dự án}
+\cfoot{\small\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\title{\vspace{-1.2cm}\textbf{\color{fsblue}FinSight}\\[4pt]
+\large Hệ thống Phân tích Báo cáo Tài chính Đa năm bằng AI Agent\\[6pt]
+\normalsize\color{fsgray} Bản đặc tả kế hoạch dự án --- Tiếng Việt}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+\vspace{-1.0cm}
+
+\begin{ghichu}
+\textbf{Một câu mô tả.} FinSight nhận Báo cáo tài chính (BCTC) của một doanh nghiệp qua nhiều năm (PDF hoặc bản scan tiếng Việt), \textbf{OCR giữ nguyên cấu trúc} $\rightarrow$ \textbf{trích xuất toàn bộ thông tin} $\rightarrow$ dựng \textbf{đồ thị tri thức nối các năm (GraphRAG)} $\rightarrow$ dùng \textbf{AgentRAG} (agent, tool-calling, memory) để tự phân tích, đối chiếu chéo và trả lời các nhiệm vụ cụ thể, có trích dẫn. Con người có thẩm quyền duyệt; phản hồi của họ quay lại tinh chỉnh mô hình.
+\end{ghichu}
+
+\tableofcontents
+\vspace{0.4cm}
+
+% =====================================================================
+\section{Tổng quan dự án}
+
+\subsection{Mục tiêu}
+Xây dựng một hệ thống \emph{tự động phân tích} BCTC tiếng Việt: thay vì một con chatbot hỏi--đáp thụ động, hệ thống \textbf{chủ động sinh ra bản phân tích} ngay khi nạp dữ liệu, sau đó cho phép người có thẩm quyền đào sâu bằng hỏi--đáp và phê duyệt kết quả.
+
+\subsection{Luồng hoạt động cốt lõi}
+\begin{verbatim}
+   BCTC nhieu nam (PDF/scan)
+            |
+   [1] OCR giu cau truc  -> document model co cau truc
+            |
+   [2] Trich xuat + chuan hoa  -> so lieu tai chinh chuan (TT200)
+            |
+   [3] GraphRAG  -> do thi tri thuc noi cac nam voi nhau
+            |
+   [4] PHAN TICH TU DONG (push) -> ty so, Altman Z, Beneish M, reconcile
+            |
+   [5] AgentRAG (agent + tool + memory) -> nhiem vu cu the, verify, cite
+            |
+   [6] Nguoi co tham quyen DUYET / sua  (HITL)
+            |
+   [7] Feedback -> finetune  (model gioi len)
+\end{verbatim}
+
+\begin{ghichu}
+\textbf{Phân biệt quan trọng.} \emph{Trích xuất} và \emph{phân tích} KHÔNG phải RAG: trích xuất là OCR + mô hình bảng; phân tích là công thức tài chính + ML trên số đã trích. \textbf{RAG/GraphRAG} chỉ phục vụ bước \emph{nối dữ liệu xuyên năm}, \emph{kiểm chứng với quy định} và \emph{hỏi--đáp}.
+\end{ghichu}
+
+\subsection{Giá trị cho doanh nghiệp (ngân hàng / fintech)}
+\begin{itemize}
+  \item Rút ngắn thời gian thẩm định 1 bộ BCTC từ vài giờ xuống vài phút, chuẩn hóa.
+  \item Giám sát liên tục theo thời gian, cảnh báo sớm khi tình hình xấu đi.
+  \item Phát hiện dấu hiệu xào nấu sổ sách (Beneish M-Score, lệch lợi nhuận -- dòng tiền) trước khi cho vay.
+  \item Mọi kết luận đều có \textbf{trích dẫn nguồn} $\rightarrow$ đáp ứng yêu cầu kiểm toán / tuân thủ.
+\end{itemize}
+
+\subsection{Phạm vi giai đoạn đầu (MVP)}
+\begin{itemize}
+  \item \textbf{Một công ty} niêm yết, BCTC \textbf{năm}, \textbf{5 năm} gần nhất, bản hợp nhất.
+  \item Gồm: Bảng cân đối kế toán, Báo cáo KQKD, Báo cáo lưu chuyển tiền tệ, Thuyết minh.
+  \item Toàn bộ \textbf{tiếng Việt}.
+  \item BCTC quý sẽ bổ sung ở pha sau (mở khóa đối chiếu quý--năm và cảnh báo sớm theo tốc độ).
+\end{itemize}
+
+% =====================================================================
+\section{Kiến trúc tổng thể}
+
+\begin{verbatim}
+            +---------------- INGEST SONG SONG (1 lan, bat dong bo) ----------------+
+  PDF/scan  |  [P1] OCR ->  [P2] Trich xuat -> [P2] Chuan hoa (TT200)              |
+  nhieu file|  (Paddle/      (TableTransformer/   (canonical chart of accounts)    |
+            |   VietOCR)      Donut + LoRA)                                        |
+            +----------------------------------|----------------------------------+
+                                               v
+                               [P3] DO THI TRI THUC (GraphRAG)
+                               node: chi tieu/nam/gia tri, thuyet minh
+                               edge: thuoc nam, tham chieu, year-over-year
+                                               |
+                  +----------------------------+----------------------------+
+                  v                            v                            v
+          [P4] PHAN TICH              [P5] AGENT (LangGraph)        [RAG quy dinh]
+          ty so, Altman Z,            tool-calling, memory,         vbpl/TT200
+          Beneish M, reconcile        nghi ngo -> verify -> cite    + web search
+                  |                            |                            |
+                  +----------------------------+----------------------------+
+                                               v
+                            [P4/P5] BAN PHAN TICH + trich dan
+                                               |
+              [P6] HITL duyet/sua --> corrections --> [P7] finetune LoRA
+                                               |
+                            [P9] Session / Memory store (moi ho so)
+\end{verbatim}
+
+% =====================================================================
+\section{Tech stack}
+
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.6cm} >{\raggedright\arraybackslash}p{6.4cm} >{\raggedright\arraybackslash}p{5.0cm}}
+\toprule
+\textbf{Tầng} & \textbf{Công nghệ đề xuất} & \textbf{Lý do} \\
+\midrule
+\endhead
+API / điều phối & FastAPI + Celery + Redis (hoặc Prefect/Temporal) & Bất đồng bộ, xử lý song song nhiều file \\
+Đọc PDF & PyMuPDF; phát hiện text-layer vs scan & Tách đường nhanh: bỏ qua OCR khi có text-layer \\
+OCR tiếng Việt & VietOCR / PaddleOCR (PP-Structure) & OCR có dấu + phân tích bố cục + bảng \\
+Trích xuất bảng (DL) & Table Transformer (TATR) hoặc Donut/Qwen2-VL, finetune LoRA & Bảng đa tầng, ô gộp --- phần học sâu lõi \\
+Chuẩn hóa & Mapping $\rightarrow$ mã số chỉ tiêu TT200 & Để đối chiếu \& tính tỷ số nhất quán \\
+Đồ thị tri thức & Neo4j (hoặc networkx + Postgres) + GraphRAG & ``Nối các năm'' = duyệt đồ thị đa bước \\
+RAG & Qdrant/pgvector + embedding bge-m3 + reranker & Truy hồi quy định, ngữ cảnh xuyên file \\
+Agent & LangGraph & Luồng tường minh, có thể kiểm toán \\
+LLM & API (Claude) cho điều phối + SLM finetune (distill) cho việc rẻ & Cân đối chi phí/tốc độ \\
+Bất định & MAPIE / conformal prediction & Cam kết độ phủ + biết ``không chắc'' \\
+Lưu trữ & Postgres(+pgvector), MinIO/S3 (file), Redis (cache) & Chuẩn production \\
+Serving & vLLM cho SLM & Suy luận theo lô, nhanh \\
+Quan sát & Langfuse (trace LLM) + Prometheus/Grafana & Đo độ trễ/chi phí, gỡ lỗi agent \\
+HITL UI & Streamlit $\rightarrow$ Next.js & Sửa trường, duyệt cờ đỏ \\
+\bottomrule
+\end{longtable}
+
+% =====================================================================
+\section{Đặc tả chi tiết từng pha}
+
+Mỗi pha mô tả theo khung: \emph{Mục tiêu --- Đầu vào --- Các bước/Thành phần --- Công nghệ --- Đầu ra --- Tiêu chí hoàn thành (DoD) --- Rủi ro}.
+
+% --------------------------------------------------
+\pha{Pha 0 --- Khởi tạo \& Thu thập dữ liệu}
+\begin{itemize}
+  \item \textbf{Mục tiêu:} dựng khung repo, hạ tầng dev, và bộ dữ liệu khởi đầu.
+  \item \textbf{Các bước:}
+  \begin{enumerate}
+    \item Tải 5 BCTC năm (gồm cả bản text-layer và bản scan) của 1 công ty niêm yết từ cafef.vn / vietstock.vn / hsx.vn.
+    \item Tải văn bản chuẩn: Thông tư 200/2014/TT-BTC (chế độ kế toán), TT96/2020 (công bố thông tin) từ vbpl.vn.
+    \item Khởi tạo repo, môi trường (Python 3.11, Poetry/uv), \texttt{docker-compose} (Postgres, Redis, MinIO, Qdrant).
+    \item Thiết lập CI cơ bản (lint, test, pre-commit).
+  \end{enumerate}
+  \item \textbf{Đầu ra:} repo chạy được, dữ liệu thô trong \texttt{data/raw/}.
+  \item \textbf{DoD:} \texttt{docker-compose up} dựng đủ dịch vụ; 5 PDF tải về; sơ đồ schema DB phác thảo.
+  \item \textbf{Rủi ro:} bản scan chất lượng kém $\rightarrow$ chuẩn bị thêm 1--2 công ty dự phòng.
+\end{itemize}
+
+% --------------------------------------------------
+\pha{Pha 1 --- OCR giữ nguyên cấu trúc}
+\begin{itemize}
+  \item \textbf{Mục tiêu:} biến PDF/scan thành \emph{document model có cấu trúc}, không mất bố cục bảng.
+  \item \textbf{Đầu vào:} PDF (text-layer hoặc ảnh scan).
+  \item \textbf{Các bước/Thành phần:}
+  \begin{enumerate}
+    \item Phát hiện loại trang: có text-layer $\rightarrow$ đọc trực tiếp; là ảnh $\rightarrow$ đưa qua OCR.
+    \item Phân tích bố cục (layout analysis): nhận diện vùng bảng, đoạn văn, tiêu đề, header/footer, số trang.
+    \item OCR tiếng Việt cho vùng text + ô bảng (giữ tọa độ bounding box).
+    \item Tái dựng cấu trúc: bảng $\rightarrow$ lưới ô (hàng/cột, ô gộp); văn bản $\rightarrow$ thứ tự đọc đúng.
+  \end{enumerate}
+  \item \textbf{Công nghệ:} PyMuPDF; PaddleOCR PP-Structure (layout + table) ; VietOCR (có thể finetune cho phông chữ BCTC).
+  \item \textbf{Đầu ra:} JSON document model: \texttt{\{pages:[\{blocks, tables:[\{cells, bbox\}], reading\_order\}]\}}.
+  \item \textbf{Đánh giá:} CER/WER cho text; \textbf{TEDS} (Tree-Edit-Distance Similarity) cho cấu trúc bảng.
+  \item \textbf{DoD:} 1 BCTC scan $\rightarrow$ JSON cấu trúc đầy đủ, bảng cân đối tái dựng đúng $\geq 95\%$ ô.
+  \item \textbf{Rủi ro:} ô gộp/đa tầng header $\rightarrow$ cần finetune + hậu xử lý theo luật.
+\end{itemize}
+
+% --------------------------------------------------
+\pha{Pha 2 --- Trích xuất toàn bộ thông tin \& Chuẩn hóa}
+\begin{itemize}
+  \item \textbf{Mục tiêu:} từ document model $\rightarrow$ số liệu tài chính \emph{có cấu trúc, chuẩn hóa} (BCTC rất dài).
+  \item \textbf{Các bước:}
+  \begin{enumerate}
+    \item Nhận dạng cấu trúc bảng (table structure recognition) cho 4 báo cáo chính + các bảng trong thuyết minh.
+    \item Trích metadata: kỳ báo cáo, đơn vị tiền (nghìn/triệu đồng), tên công ty, mã số thuế, trạng thái kiểm toán.
+    \item Parse số: dấu phân tách nghìn kiểu VN, số âm trong ngoặc \texttt{(1.234)}, ô trống.
+    \item \textbf{Chuẩn hóa:} ánh xạ mỗi dòng $\rightarrow$ \textbf{mã số chỉ tiêu TT200} (ví dụ ``Tiền và tương đương tiền'' $\rightarrow$ mã 110). Đây là cầu nối cho phân tích \& đối chiếu.
+  \end{enumerate}
+  \item \textbf{Công nghệ:} Table Transformer / Donut + \textbf{LoRA finetune} trên bảng BCTC tiếng Việt; rule-based normalizer.
+  \item \textbf{Đầu ra:} bảng số liệu chuẩn hóa theo năm trong Postgres (schema canonical).
+  \item \textbf{Schema 1 dòng (ví dụ):}
+  \begin{verbatim}
+  { "chi_tieu": "Tien va tuong duong tien", "ma_so": "110",
+    "thuyet_minh": "V.01", "nam": 2024,
+    "gia_tri": 12345678901, "don_vi": "VND" }
+  \end{verbatim}
+  \item \textbf{Đánh giá:} độ chính xác theo ô (đặc biệt ô số), độ chính xác ánh xạ dòng $\rightarrow$ mã số.
+  \item \textbf{DoD:} 5 năm $\rightarrow$ bảng chuẩn hóa đầy đủ; golden set $\sim$15--20 bảng để đo.
+  \item \textbf{Rủi ro:} tên chỉ tiêu khác nhau giữa các năm/công ty $\rightarrow$ cần từ điển đồng nghĩa + fuzzy match.
+\end{itemize}
+
+% --------------------------------------------------
+\pha{Pha 3 --- Đồ thị tri thức đa năm (GraphRAG)}
+\begin{itemize}
+  \item \textbf{Mục tiêu:} ``nối các năm với nhau'' để truy vấn đa bước, đối chiếu xuyên file.
+  \item \textbf{Thiết kế đồ thị:}
+  \begin{itemize}
+    \item \textbf{Node:} chỉ tiêu (mã số), giá trị theo năm, công ty, mục thuyết minh, kỳ báo cáo.
+    \item \textbf{Edge:} \emph{thuộc năm}, \emph{thuộc báo cáo}, \emph{tham chiếu thuyết minh}, \emph{quan hệ năm-qua-năm}, \emph{quan hệ tính toán} (ví dụ Lợi nhuận gộp = Doanh thu $-$ Giá vốn).
+  \end{itemize}
+  \item \textbf{GraphRAG indexing:} trích entity + quan hệ, sinh tóm tắt cụm (community summary) để trả lời câu hỏi ``toàn cục''.
+  \item \textbf{Công nghệ:} Neo4j (hoặc networkx + Postgres); GraphRAG (Microsoft hoặc tự xây); embedding bge-m3 cho truy hồi.
+  \item \textbf{Đầu ra:} đồ thị truy vấn được; API \texttt{query\_graph()} trả dữ liệu xuyên năm.
+  \item \textbf{DoD:} truy vấn ``doanh thu 2020--2024'' và ``đường tính lợi nhuận gộp năm 2023'' chạy đúng.
+  \item \textbf{Rủi ro:} bùng nổ node $\rightarrow$ chỉ mô hình hóa chỉ tiêu cốt lõi + thuyết minh quan trọng.
+\end{itemize}
+
+% --------------------------------------------------
+\pha{Pha 4 --- Phân tích tự động \& Đối chiếu (push)}
+\begin{itemize}
+  \item \textbf{Mục tiêu:} ngay khi có dữ liệu, \emph{chủ động} sinh bản phân tích, không chờ hỏi.
+  \item \textbf{Tính toán:}
+  \begin{itemize}
+    \item \textbf{Tỷ số \& xu hướng:} thanh khoản (current, quick), đòn bẩy (D/E, Nợ/EBITDA), sinh lời (ROA, ROE, biên LN), khả năng trả lãi (interest coverage), vòng quay vốn (DSO/DIO/DPO).
+    \item \textbf{Dự báo phá sản:} Altman Z'' (cho doanh nghiệp dùng giá trị sổ sách).
+    \item \textbf{Phát hiện xào nấu:} Beneish M-Score (8 biến, cần 2 năm liên tiếp); accruals; lệch lợi nhuận -- dòng tiền; Benford.
+    \item \textbf{Đối chiếu (reconciliation):} thuyết minh vs số trên báo cáo; nhất quán năm-qua-năm; (sau: lũy kế quý vs năm).
+  \end{itemize}
+  \item \textbf{Bất định:} dùng conformal prediction để \emph{abstain} (``không đủ cơ sở'') thay vì đoán bừa.
+  \item \textbf{Đầu ra:} \textbf{Bản phân tích / Thẻ rủi ro} có cờ đỏ + trích dẫn vị trí số liệu.
+  \item \textbf{DoD:} sinh thẻ phân tích tự động cho 1 công ty 5 năm, mỗi cờ đỏ truy được về dòng nguồn.
+  \item \textbf{Rủi ro:} công thức sai do đơn vị/dấu $\rightarrow$ unit test cho từng chỉ số.
+\end{itemize}
+
+% --------------------------------------------------
+\pha{Pha 5 --- AgentRAG: Agent, Tool-calling, Memory}
+\begin{itemize}
+  \item \textbf{Mục tiêu:} cho phép giao \emph{nhiệm vụ cụ thể} bằng ngôn ngữ tự nhiên trên nền dữ liệu đã phân tích.
+  \item \textbf{Các loại nhiệm vụ (theo đúng mô tả):}
+  \begin{itemize}
+    \item ``Trích xuất toàn bộ thông tin BCTC năm 2023.''
+    \item ``Phần nào khớp / phần nào lệch qua các năm?'' (nhiệm vụ đối chiếu).
+    \item ``So sánh khoản mục \emph{hàng tồn kho} giữa 2020--2024.''
+    \item ``Tính và giải thích biến động biên lợi nhuận gộp 5 năm.''
+  \end{itemize}
+  \item \textbf{Tools (function calling):} \texttt{query\_graph}, \texttt{get\_lineitem}, \texttt{compute\_ratio}, \texttt{reconcile}, \texttt{search\_regulation} (RAG vbpl/TT200), \texttt{web\_search}.
+  \item \textbf{Memory:}
+  \begin{itemize}
+    \item Ngắn hạn: ngữ cảnh hội thoại hiện tại.
+    \item Dài hạn: phát hiện đã được duyệt, lưu theo \emph{session = một hồ sơ doanh nghiệp}.
+  \end{itemize}
+  \item \textbf{Verify khi nghi ngờ:} confidence thấp / nghi vi phạm $\rightarrow$ truy hồi quy định + (nếu cần) web search nguồn chính thống $\rightarrow$ \textbf{trích dẫn}; abstain khi không đủ bằng chứng.
+  \item \textbf{Công nghệ:} LangGraph (đồ thị quyết định tường minh, audit được).
+  \item \textbf{Đầu ra:} câu trả lời/nhiệm vụ hoàn thành kèm trích dẫn + đường suy luận lưu lại.
+  \item \textbf{DoD:} agent hoàn thành đúng 4 loại nhiệm vụ mẫu, mỗi kết quả có trích dẫn.
+  \item \textbf{Rủi ro:} ảo giác số liệu $\rightarrow$ \emph{bắt buộc} agent chỉ lấy số qua tool, không tự ``nhớ'' số.
+\end{itemize}
+
+% --------------------------------------------------
+\pha{Pha 6 --- Human-in-the-loop \& Vòng tinh chỉnh}
+\begin{itemize}
+  \item \textbf{Mục tiêu:} người có thẩm quyền duyệt bản phân tích; phản hồi thành dữ liệu huấn luyện.
+  \item \textbf{Các bước:}
+  \begin{enumerate}
+    \item UI duyệt/sửa trường trích xuất \& cờ đỏ (Streamlit).
+    \item Active learning: ưu tiên đưa case confidence thấp cho người xem.
+    \item Gom correction $\rightarrow$ LoRA finetune lại extractor; \textbf{trigger theo drift} (độ phủ conformal tụt / PSI), không theo lịch cứng.
+  \end{enumerate}
+  \item \textbf{Đầu ra:} mỗi vòng feedback cải thiện độ chính xác đo được.
+  \item \textbf{DoD:} chạy trọn 1 vòng: sửa $\rightarrow$ finetune $\rightarrow$ accuracy tăng có số liệu.
+  \item \textbf{Rủi ro:} dữ liệu correction ít $\rightarrow$ gộp với dữ liệu tổng hợp (synthetic) để đủ tín hiệu.
+\end{itemize}
+
+% --------------------------------------------------
+\pha{Pha 7 --- Hiệu năng \& Xử lý song song nhiều file}
+\begin{itemize}
+  \item \textbf{Nguyên tắc:} làm nặng \emph{một lần} lúc nạp; truy vấn chỉ duyệt thứ đã dựng sẵn.
+  \item \textbf{Song song 3 mức:} theo file (mỗi file 1 task Celery), theo trang (OCR song song), theo lô GPU (gộp lời gọi mô hình).
+  \item \textbf{Pipeline không rào chắn:} file nào xong xử lý tiếp file đó (wall-clock = file chậm nhất).
+  \item \textbf{Cache:} hash file (idempotency), cache embedding, \textbf{semantic cache} cho câu hỏi lặp.
+  \item \textbf{Serving:} vLLM cho SLM; \emph{fast-path} bằng SLM rẻ, chỉ escalate model lớn khi confidence thấp.
+  \item \textbf{DoD:} xử lý $N$ file song song; báo cáo throughput (file/phút) + p95 latency truy vấn.
+  \item \textbf{Rủi ro:} nghẽn GPU $\rightarrow$ hàng đợi + backpressure.
+\end{itemize}
+
+% --------------------------------------------------
+\pha{Pha 8 --- Đánh giá \& Backtest}
+\begin{itemize}
+  \item \textbf{Metrics theo tầng:} OCR (CER/WER), bảng (TEDS), trích xuất (cell accuracy), ánh xạ mã số (accuracy), đối chiếu (tỷ lệ bắt lỗi trên bộ synthetic cấy lỗi), rủi ro (backtest).
+  \item \textbf{Backtest giá trị thật:} chạy Altman Z / Beneish M trên công ty đã \emph{hủy niêm yết / scandal kế toán} $\rightarrow$ chứng minh hệ thống flag được \emph{trước} sự kiện.
+  \item \textbf{DoD:} báo cáo đánh giá đầy đủ + ít nhất 1 ca backtest thành công.
+\end{itemize}
+
+% --------------------------------------------------
+\pha{Pha 9 --- Quan sát, Bảo mật, Triển khai}
+\begin{itemize}
+  \item \textbf{Quan sát:} Langfuse (trace agent/LLM, chi phí token), Prometheus + Grafana (hệ thống).
+  \item \textbf{Bảo mật \& tuân thủ:} không dùng dữ liệu PII thật; audit log mọi kết luận; phân quyền người duyệt.
+  \item \textbf{Session/Memory store:} mỗi hồ sơ là một phiên có thể mở lại, kèm lịch sử phát hiện \& phê duyệt.
+  \item \textbf{Triển khai:} \texttt{docker-compose} cho dev; tách service (ingest, agent, UI).
+  \item \textbf{DoD:} chạy end-to-end có giám sát, mở lại được session cũ.
+\end{itemize}
+
+% =====================================================================
+\section{Bổ sung những phần còn thiếu (so với mô tả ban đầu)}
+
+Mô tả gốc tập trung OCR $\rightarrow$ trích xuất $\rightarrow$ AgentRAG. Để thành một dự án ``thật sự hữu ích'' và \emph{bảo vệ được trước người chấm khắt khe}, cần bổ sung:
+
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable}{>{\raggedright\arraybackslash}p{4.6cm} >{\raggedright\arraybackslash}p{10.4cm}}
+\toprule
+\textbf{Hạng mục bổ sung} & \textbf{Vì sao cần} \\
+\midrule
+\endhead
+Chuẩn hóa TT200 & Cầu nối để phân tích \& đối chiếu nhất quán; thiếu nó thì số liệu rời rạc. \\
+Tầng phân tích rủi ro & Biến số thô thành \emph{tín hiệu ra quyết định} (Altman, Beneish) --- đây mới là giá trị. \\
+Bộ đánh giá (eval harness) & Không đo được thì không chứng minh được ``hữu ích''. \\
+HITL + vòng finetune & Biến phản hồi người dùng thành cải thiện model (flywheel). \\
+Conformal / abstention & Cam kết độ tin cậy; biết ``không chắc'' thay vì bịa. \\
+Drift detection & Trigger huấn luyện lại đúng lúc (MLOps thật, không phải cron). \\
+Quan sát (observability) & Gỡ lỗi agent, theo dõi chi phí/độ trễ. \\
+Bảo mật / PII & Dữ liệu tài chính nhạy cảm; bắt buộc với ngành. \\
+Hiệu năng / song song & Yêu cầu thực tế khi xử lý nhiều file. \\
+Data \& model versioning & Tái lập kết quả (DVC / MLflow). \\
+Kiểm thử (testing) & Unit test cho công thức tài chính, integration test pipeline. \\
+\bottomrule
+\end{longtable}
+
+% =====================================================================
+\section{Cấu trúc thư mục repo đề xuất}
+\begin{verbatim}
+finsight/
+  data/                # raw/ , processed/ , golden/ , synthetic/
+  configs/             # cau hinh model, pipeline, prompt
+  finsight/
+    ingest/            # P1: doc PDF, phat hien scan, hang doi
+    ocr/               # P1: OCR + layout (Paddle/VietOCR)
+    extraction/        # P2: table model + LoRA + normalizer TT200
+    graph/             # P3: dung GraphRAG, query do thi
+    analysis/          # P4: ty so, Altman, Beneish, reconcile
+    agent/             # P5: LangGraph, tools, memory
+    rag/               # RAG quy dinh (vbpl), embedding, reranker
+    hitl/              # P6: review UI + thu thap correction
+    serving/           # P7: vLLM, cache, API
+    eval/              # P8: metrics, backtest, golden set
+    common/            # schema, db, logging, config
+  ui/                  # Streamlit / Next.js
+  docker/              # docker-compose, Dockerfile
+  tests/
+  notebooks/
+  README.md
+\end{verbatim}
+
+% =====================================================================
+\section{Lộ trình thời gian (gợi ý 12 tuần)}
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable}{>{\raggedright\arraybackslash}p{1.8cm} >{\raggedright\arraybackslash}p{8.2cm} >{\raggedright\arraybackslash}p{4.6cm}}
+\toprule
+\textbf{Tuần} & \textbf{Công việc} & \textbf{Kết quả} \\
+\midrule
+\endhead
+1 & Pha 0: data + repo + hạ tầng & Khung chạy \\
+2--3 & Pha 1--2: OCR + trích xuất text-layer + chuẩn hóa TT200 & MVP trích xuất, golden set \\
+4 & Pha 4: tầng phân tích (tỷ số + Altman + Beneish) & \textbf{Đã có giá trị thật} \\
+5--6 & Pha 1: OCR scan + Pha 6: LoRA finetune từ correction & Học sâu + flywheel \\
+7--8 & Pha 3: GraphRAG + Pha 4: đối chiếu xuyên năm & Liên thông các năm \\
+9--10 & Pha 5: AgentRAG (tool + memory) + RAG quy định + conformal & Agent + tuân thủ \\
+11--12 & Pha 7--9: song song, quan sát, backtest, viết blog/README & Demo + bằng chứng \\
+\bottomrule
+\end{longtable}
+
+\begin{ghichu}
+\textbf{Quy tắc thực thi.} Làm \emph{lát cắt dọc} trước (trích xuất $\rightarrow$ thẻ rủi ro chạy được ở tuần 4), rồi mới đào sâu từng tầng. \emph{Không} dựng hết hạ tầng rồi mới có cái chạy.
+\end{ghichu}
+
+% =====================================================================
+\section{Tiêu chí thành công}
+\begin{itemize}
+  \item Trích xuất: cell accuracy $\geq 95\%$ trên golden set; ánh xạ mã số $\geq 90\%$.
+  \item Đối chiếu: bắt $\geq 90\%$ lỗi cấy trên bộ synthetic có ground-truth.
+  \item Phân tích: backtest Altman/Beneish flag đúng $\geq 1$ ca công ty đã vỡ/scandal.
+  \item Agent: hoàn thành 4 loại nhiệm vụ mẫu, 100\% kết luận số liệu có trích dẫn (không bịa số).
+  \item Hiệu năng: xử lý song song, có số liệu throughput \& p95 latency.
+\end{itemize}
+
+% =====================================================================
+\section{Rủi ro \& Giảm thiểu}
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable}{>{\raggedright\arraybackslash}p{6.2cm} >{\raggedright\arraybackslash}p{8.6cm}}
+\toprule
+\textbf{Rủi ro} & \textbf{Giảm thiểu} \\
+\midrule
+\endhead
+Bản scan kém, bảng phức tạp & Finetune OCR + hậu xử lý theo luật; chọn công ty BCTC sạch trước. \\
+Ảo giác số liệu của LLM & Agent chỉ lấy số qua tool; cấm ``nhớ'' số; trích dẫn bắt buộc. \\
+Thiếu dữ liệu correction để finetune & Bổ sung dữ liệu tổng hợp có ground-truth điều khiển được. \\
+Over-claim novelty & Pitch bằng cam kết/độ đo (coverage, accuracy), không bằng tính từ. \\
+Scope phình to & Khóa MVP: 1 công ty, BCTC năm, 5 năm; tính năng khác để pha sau. \\
+\bottomrule
+\end{longtable}
+
+\vspace{0.4cm}
+\begin{center}
+\color{fsgray}\small --- Hết bản kế hoạch FinSight ---
+\end{center}
+
+\end{document}

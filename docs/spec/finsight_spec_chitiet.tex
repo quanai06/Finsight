@@ -1,0 +1,477 @@
+% !TEX program = xelatex
+% Bien dich: xelatex finsight_spec_chitiet.tex (chay 2 lan de cap nhat muc luc)
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{fontspec}
+\usepackage{amsmath}
+\usepackage[a4paper,margin=2.2cm]{geometry}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{fsblue}{RGB}{20,80,140}
+\definecolor{fsgreen}{RGB}{20,120,70}
+\definecolor{fsgray}{RGB}{90,90,90}
+\definecolor{fslight}{RGB}{238,243,250}
+\definecolor{codebg}{RGB}{246,246,246}
+
+\hypersetup{colorlinks=true, linkcolor=fsblue, urlcolor=fsblue}
+
+\titleformat{\section}{\Large\bfseries\color{fsblue}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\large\bfseries\color{fsblue!85!black}}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{fsgreen!75!black}}{\thesubsubsection}{0.5em}{}
+
+\setlist[itemize]{leftmargin=1.35em, itemsep=2pt, topsep=2pt}
+\setlist[enumerate]{leftmargin=1.55em, itemsep=2pt, topsep=2pt}
+
+% Khoi code: ASCII-only ben trong de an toan voi xelatex
+\usepackage{fvextra}
+\fvset{frame=single, framesep=4pt, fontsize=\small, breaklines=true,
+  rulecolor=\color{fsblue!40}}
+
+\newtcolorbox{ghichu}{colback=fslight, colframe=fsblue, boxrule=0.6pt, arc=2pt,
+  left=6pt, right=6pt, top=4pt, bottom=4pt}
+\newtcolorbox{quyetdinh}{colback=fsgreen!7, colframe=fsgreen!70!black, boxrule=0.6pt,
+  arc=2pt, left=6pt, right=6pt, top=4pt, bottom=4pt}
+
+\newcommand{\dec}[1]{\textbf{\color{fsgreen!60!black}[QUYẾT ĐỊNH]} #1}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small\color{fsgray} FinSight --- Spec chi tiết}
+\rhead{\small\color{fsgray} v1}
+\cfoot{\small\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\title{\vspace{-1.2cm}\textbf{\color{fsblue}FinSight --- Bản đặc tả kỹ thuật chi tiết}\\[4pt]
+\large Implementation Spec theo từng pha\\[5pt]
+\normalsize\color{fsgray} Mỗi quyết định: thư viện, tham số, schema, thuật toán, fallback}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+\vspace{-0.9cm}
+
+\begin{ghichu}
+\textbf{Mục đích tài liệu.} Đây là spec triển khai --- trả lời ``làm \emph{như thế nào} cụ thể'', không phải ``làm \emph{cái gì}''. Mọi lựa chọn đều kèm tham số mặc định, ngưỡng, và đường fallback. Tài liệu này đi cùng \texttt{finsight\_ke\_hoach.tex} (bản tổng quan kiến trúc).
+\end{ghichu}
+
+\tableofcontents
+\vspace{0.3cm}
+
+% =====================================================================
+\section{Quy ước chung}
+
+\begin{itemize}
+  \item \textbf{Ngôn ngữ:} Python 3.11; quản lý phụ thuộc bằng \texttt{uv} (hoặc Poetry).
+  \item \textbf{Đơn vị tiền chuẩn hóa nội bộ:} VND (đồng), kiểu \texttt{int64} hoặc \texttt{Decimal} --- KHÔNG dùng float cho tiền.
+  \item \textbf{Định danh:} \texttt{doc\_id} (1 file BCTC), \texttt{report\_id} (1 báo cáo trong file: BS/IS/CF/Notes), \texttt{nam} (năm tài chính), \texttt{ma\_so} (mã số chỉ tiêu TT200).
+  \item \textbf{Provenance bắt buộc:} mọi số liệu mang theo \texttt{(doc\_id, page, bbox)} để truy vết \& trích dẫn.
+\end{itemize}
+
+% =====================================================================
+\section{Pha 1 --- OCR giữ cấu trúc (chi tiết)}
+
+\subsection{Phân loại trang: digital vs scan}
+\begin{quyetdinh}
+\dec{} PyMuPDF (\texttt{fitz}). Với mỗi trang, đếm ký tự text trích được. Ngưỡng: \texttt{n\_chars >= 50} \emph{và} diện tích text-span phủ $> 5\%$ trang $\Rightarrow$ trang \emph{digital}; ngược lại $\Rightarrow$ \emph{scan}.
+\end{quyetdinh}
+\begin{itemize}
+  \item Digital: lấy text + bbox bằng \texttt{page.get\_text("dict")} (blocks $\rightarrow$ lines $\rightarrow$ spans, có bbox). Bảng thử trước bằng \texttt{page.find\_tables()}.
+  \item Scan: render ảnh \texttt{page.get\_pixmap(dpi=300)} $\rightarrow$ đưa sang pipeline OCR.
+  \item Trang lai (vừa text vừa ảnh chèn): xử lý theo vùng --- vùng ảnh OCR, vùng text đọc thẳng.
+\end{itemize}
+
+\subsection{Pipeline OCR + layout cho trang scan}
+\begin{quyetdinh}
+\dec{} Bố cục \& cấu trúc bảng: \textbf{PaddleOCR PP-Structure} (model layout \texttt{PP-DocLayout}; table structure \texttt{SLANet}). Nhận dạng \emph{chữ tiếng Việt}: \textbf{VietOCR} (\texttt{vgg\_transformer}) chạy trên từng dòng cắt ra --- vì recognition đa ngữ của Paddle yếu với dấu tiếng Việt.
+\end{quyetdinh}
+
+Pipeline từng bước:
+\begin{enumerate}
+  \item PP-DocLayout $\rightarrow$ phân vùng: \{title, text, table, figure, header, footer, page-number\}.
+  \item Với vùng \texttt{text}: PP-Structure text-detection $\rightarrow$ box từng dòng $\rightarrow$ crop $\rightarrow$ \textbf{VietOCR} nhận dạng.
+  \item Với vùng \texttt{table}: SLANet $\rightarrow$ cấu trúc bảng (HTML + bbox từng ô + row/col span) $\rightarrow$ crop từng ô $\rightarrow$ VietOCR nhận dạng nội dung ô.
+  \item Thứ tự đọc (reading order): thuật toán \textbf{XY-cut} đệ quy; nếu 1 cột thì sort theo \texttt{top} rồi \texttt{left}.
+\end{enumerate}
+
+\subsection{Thuật toán hậu xử lý ô gộp \& phân cấp hàng (BCTC)}
+Bảng cân đối có \emph{thụt lề mang ngữ nghĩa} (Tài sản ngắn hạn $>$ Tiền $>$ Tiền mặt). Thuật toán gán cấp:
+\begin{enumerate}
+  \item Lấy tọa độ \texttt{x\_left} của text trong ô nhãn (cột đầu) của mọi hàng.
+  \item Gom cụm các giá trị \texttt{x\_left} thành các \emph{mức thụt lề} (làm tròn về bội số $\approx$12--16px, hoặc 1D k-means k=3..5).
+  \item Hàng có mức thụt sâu hơn = con của hàng gần nhất phía trên có mức thụt nông hơn $\Rightarrow$ dựng cây phân cấp.
+  \item Ô gộp (row/col span từ SLANet): nhân bản giá trị cho các ô con khi cần, đánh dấu \texttt{is\_merged}.
+  \item Gán cột số $\rightarrow$ kỳ: đọc hàng header (``Số cuối năm'' / ``Số đầu năm'') để map cột $\rightarrow$ \texttt{nam}.
+\end{enumerate}
+
+\subsection{Schema đầu ra (document model)}
+\begin{Verbatim}
+{
+  "doc_id": "vnm_2023",
+  "pages": [
+    {
+      "page": 4, "is_scanned": true,
+      "blocks": [
+        {"type":"title","text":"BANG CAN DOI KE TOAN","bbox":[..]},
+        {"type":"table","table_id":"t1",
+         "cells":[
+           {"row":3,"col":0,"text":"Tien va tuong duong tien",
+            "indent_level":1,"row_span":1,"col_span":1,"bbox":[..]},
+           {"row":3,"col":1,"text":"110","bbox":[..]},
+           {"row":3,"col":2,"text":"12.345.678.901","bbox":[..]}
+         ],
+         "col_header_map":{"2":"so_cuoi_nam","3":"so_dau_nam"}}
+      ]
+    }
+  ]
+}
+\end{Verbatim}
+
+\subsection{Đánh giá Pha 1}
+\begin{itemize}
+  \item Text: \textbf{CER}/\textbf{WER} bằng \texttt{jiwer}. Mục tiêu CER $<$ 3\% trên trang digital, $<$ 8\% trên scan.
+  \item Cấu trúc bảng: \textbf{TEDS} (Tree-Edit-Distance Similarity, script gốc PubTabNet). Mục tiêu TEDS $>$ 0.90.
+\end{itemize}
+
+% =====================================================================
+\section{Pha 2 --- Trích xuất \& Chuẩn hóa (chi tiết)}
+
+\subsection{Mô hình trích xuất bảng (phần DL lõi)}
+\begin{quyetdinh}
+\dec{} Hai phương án, chọn theo dữ liệu sẵn có:
+\begin{itemize}
+  \item \textbf{A --- Decoupled (khuyên dùng cho MVP):} Table Transformer (TATR, DETR-based) cho \emph{structure recognition} + VietOCR cho nội dung ô. Dễ debug, ít dữ liệu, lỗi tách bạch.
+  \item \textbf{B --- End-to-end:} \texttt{Qwen2-VL-2B-Instruct} (hoặc Donut) finetune ảnh-bảng $\rightarrow$ JSON. Mạnh hơn khi bảng phức tạp, nhưng cần nhiều dữ liệu \& khó debug.
+\end{itemize}
+MVP: đi phương án A; chuẩn bị dữ liệu để nâng cấp B sau.
+\end{quyetdinh}
+
+\subsubsection{Cấu hình LoRA (khi finetune phương án B --- Qwen2-VL-2B)}
+\begin{Verbatim}
+LoraConfig(
+  r=16, lora_alpha=32, lora_dropout=0.05, bias="none",
+  task_type="CAUSAL_LM",
+  target_modules=["q_proj","k_proj","v_proj","o_proj",
+                  "gate_proj","up_proj","down_proj"],
+  # tuy chon: them lop merger cua vision encoder
+)
+# Train: lr=1e-4, cosine schedule, warmup_ratio=0.03,
+#        bf16, grad_accum -> effective batch=16, epochs=3..5,
+#        max_grad_norm=1.0. Framework: PEFT + transformers/TRL.
+\end{Verbatim}
+Donut (encoder-decoder MBART): LoRA \texttt{r=8..16}, \texttt{target\_modules=["q\_proj","k\_proj","v\_proj","out\_proj"]} ở decoder.
+
+\subsubsection{Xây dữ liệu huấn luyện}
+\begin{itemize}
+  \item \textbf{Annotation:} \texttt{PPOCRLabel} (xuất cấu trúc bảng HTML, hợp PaddleOCR) hoặc \texttt{Label Studio} (template OCR/table). Nhãn: bbox ô + text + row/col span + mã số.
+  \item \textbf{Tổng hợp (synthetic) để pretrain:} render hàng nghìn ảnh bảng BCTC từ \emph{chart of accounts TT200} + số ngẫu nhiên hợp lệ, đa font/độ nhiễu/đường kẻ. Ground-truth sinh kèm $\Rightarrow$ miễn phí, vô hạn.
+  \item \textbf{Thật:} 15--20 bảng làm golden eval; $\sim$50--200 bảng người sửa (từ HITL) để finetune.
+  \item \textbf{Chiến lược:} pretrain trên synthetic $\rightarrow$ finetune trên dữ liệu thật đã sửa.
+  \item \textbf{Target format (phương án B):} chuỗi JSON các hàng/ô (xem schema dưới).
+\end{itemize}
+
+\subsubsection{Pipeline inference từng bước}
+\begin{enumerate}
+  \item Ảnh trang $\rightarrow$ phát hiện vùng bảng (PP-DocLayout).
+  \item Crop bảng $\rightarrow$ TATR (structure) \emph{hoặc} Qwen2-VL (JSON).
+  \item (Phương án A) Crop từng ô $\rightarrow$ VietOCR $\rightarrow$ text.
+  \item Lắp lưới ô + áp thuật toán phân cấp/ô gộp (Pha 1).
+  \item \textbf{Parse số} (xem dưới) + phát hiện đơn vị tiền.
+  \item \textbf{Chuẩn hóa nhãn $\rightarrow$ mã số TT200} (mục \ref{sec:tt200}).
+  \item \textbf{Validation số học} (mục \ref{sec:valid}).
+\end{enumerate}
+
+\subsection{Parse số tiếng Việt}
+\begin{quyetdinh}
+\dec{} Regex + luật: dấu chấm là phân tách nghìn (\texttt{12.345.678}); số âm trong ngoặc \texttt{(1.234)} $\rightarrow$ \texttt{-1234}; ô \{``-'', ``'', ``N/A''\} $\rightarrow$ \texttt{null}; nhân hệ số đơn vị (``triệu đồng'' $\rightarrow \times 10^6$). Lưu dạng \texttt{int} VND.
+\end{quyetdinh}
+
+\subsection{Chuẩn hóa $\rightarrow$ mã số TT200 (cascade 4 tầng)}
+\label{sec:tt200}
+\begin{ghichu}
+\textbf{Insight cốt lõi:} BCTC theo TT200 \emph{đã in sẵn cột ``Mã số''} (110, 200, 311\dots). Vì vậy đường chính KHÔNG phải fuzzy match nhãn, mà là \textbf{đọc thẳng cột mã số} rồi tra bảng tĩnh. Fuzzy/embedding/LLM chỉ là fallback khi mã số mất/mờ.
+\end{ghichu}
+
+\begin{enumerate}
+  \item \textbf{Tầng 1 --- Đọc mã số trực tiếp (chính, độ chính xác cao nhất):} lấy giá trị cột ``Mã số'' $\rightarrow$ tra \texttt{TT200\_CHART} (dict tĩnh $\sim$ vài trăm mã, seed từ phụ lục Thông tư 200). Hợp lệ $\Rightarrow$ chấp nhận.
+  \item \textbf{Tầng 2 --- Fuzzy match nhãn} (khi mã số thiếu/garbled): thư viện \textbf{RapidFuzz}, hàm \texttt{token\_sort\_ratio}, \textbf{ngưỡng $\geq 88$}. Tiền xử lý: lowercase, bỏ dấu câu, chuẩn hóa khoảng trắng. Khớp $\Rightarrow$ chấp nhận.
+  \item \textbf{Tầng 3 --- Embedding similarity} (khi fuzzy $<88$): model \texttt{bkai-foundation-models/vietnamese-bi-encoder} (hoặc \texttt{bge-m3}); \textbf{cosine}; encode nhãn vs embedding của toàn bộ nhãn chuẩn TT200; lấy top-1, \textbf{chấp nhận nếu cos $> 0.75$}.
+  \item \textbf{Tầng 4 --- LLM classify} (khi cos $\leq 0.75$ hoặc top-2 sát nhau): đưa nhãn + top-5 ứng viên (từ tầng 3) cho LLM chọn, few-shot 3--5 ví dụ, \emph{output ràng buộc} (chỉ 1 mã hoặc \texttt{UNKNOWN}).
+  \item \textbf{Fallback cuối:} không tầng nào đạt $\Rightarrow$ gán \texttt{unmapped}, lưu nhãn thô, \textbf{đẩy HITL}. Tuyệt đối không bỏ âm thầm.
+\end{enumerate}
+
+Prompt LLM (tầng 4):
+\begin{Verbatim}
+He thong: Ban la chuyen gia ke toan VN (TT200). Cho mot ten chi tieu
+va danh sach ma so ung vien, chon DUNG MOT ma phu hop nhat, hoac tra
+"UNKNOWN" neu khong chac. Chi tra ma so.
+
+Vi du:
+- "Tien va cac khoan tuong duong tien" -> 110
+- "Nguoi mua tra tien truoc ngan han" -> 312
+- "Chi phi tra truoc dai han" -> 261
+
+Ten chi tieu: "{label}"
+Ung vien: {top5_codes_with_names}
+Tra loi:
+\end{Verbatim}
+
+\textbf{Từ điển đồng nghĩa:} seed thủ công từ phụ lục TT200; \emph{tự lớn lên} --- mỗi correction của người ở tầng fallback ghi thêm 1 cặp (nhãn thô $\rightarrow$ mã chuẩn) vào dictionary, lần sau khớp ngay ở tầng 2.
+
+\subsection{Validation số học (bắt lỗi extraction)}
+\label{sec:valid}
+\begin{itemize}
+  \item \texttt{Tong tai san (270) == Tai san NH (100) + Tai san DH (200)}.
+  \item \texttt{Tong cong nguon von (440) == Tong tai san (270)}.
+  \item Cha = tổng các con theo cây phân cấp (sai số cho phép do làm tròn $\leq$ 1 đơn vị).
+  \item Vi phạm $\Rightarrow$ cờ \texttt{extraction\_warning} + đẩy HITL ô liên quan.
+\end{itemize}
+
+\subsection{Schema chuẩn hóa (1 dòng, lưu Postgres)}
+\begin{Verbatim}
+{ "doc_id":"vnm_2023","report":"balance_sheet","nam":2023,
+  "ma_so":"110","chi_tieu":"Tien va tuong duong tien",
+  "parent_ma_so":"100","indent_level":1,"thuyet_minh":"V.01",
+  "gia_tri": 12345678901, "don_vi":"VND",
+  "map_method":"direct_code","map_confidence":1.0,
+  "provenance": {"page":4,"bbox":[..]} }
+\end{Verbatim}
+
+% =====================================================================
+\section{Pha 3 --- GraphRAG đa năm (chi tiết)}
+
+\begin{quyetdinh}
+\dec{} \textbf{Neo4j} cho đồ thị; \textbf{Microsoft GraphRAG} (hoặc pipeline tự xây) cho indexing + community summary; embedding \texttt{bge-m3} cho truy hồi ngữ nghĩa.
+\end{quyetdinh}
+
+Mô hình đồ thị (Cypher rút gọn):
+\begin{Verbatim}
+(:Company {mst, ten})
+(:LineItem {ma_so, chi_tieu})
+(:Value {gia_tri, nam, report})
+(:Note {ma, noi_dung})
+
+(LineItem)-[:HAS_VALUE]->(Value)
+(Value)-[:OF_YEAR]->(:Year {nam})
+(LineItem)-[:CHILD_OF]->(LineItem)        // phan cap
+(Value)-[:YOY {delta_pct}]->(Value)        // nam-qua-nam
+(LineItem)-[:REFERENCES]->(Note)           // tham chieu thuyet minh
+(LineItem)-[:COMPUTED_FROM]->(LineItem)    // vi du LN gop = DT - GV
+\end{Verbatim}
+\begin{itemize}
+  \item Cạnh \texttt{YOY} tính sẵn lúc ingest $\Rightarrow$ truy vấn xu hướng nhanh.
+  \item Community summary: gom cụm theo nhóm chỉ tiêu (thanh khoản, đòn bẩy\dots) để trả lời câu hỏi ``toàn cục''.
+  \item Chống bùng nổ node: chỉ mô hình hóa chỉ tiêu cốt lõi + thuyết minh quan trọng (whitelist mã số).
+\end{itemize}
+
+% =====================================================================
+\section{Pha 4 --- Conformal Prediction (chi tiết)}
+
+Áp dụng cho \emph{bài toán phân loại ánh xạ nhãn $\rightarrow$ mã số TT200} (và tương tự cho cờ rủi ro).
+
+\begin{quyetdinh}
+\dec{} \textbf{Split Conformal} với \textbf{APS} (Adaptive Prediction Sets). Coverage target $1-\alpha = 0.90$.
+\end{quyetdinh}
+
+\begin{itemize}
+  \item \textbf{Điểm số:} bộ phân loại (embedding/LLM) cho phân phối $\hat p(y\mid x)$ trên các mã ứng viên.
+  \item \textbf{Nonconformity score (APS):} với mẫu calibration $(x,y)$, sắp xếp $\hat p$ giảm dần, cộng dồn đến khi gặp lớp đúng $y$ $\Rightarrow$ $s = $ tổng tích lũy đó.
+  \item \textbf{Calibration set:} 200--500 mẫu \emph{đã có nhãn người} (golden + correction), KHÔNG dùng để train.
+  \item \textbf{Ngưỡng:} $\hat q = $ phân vị $\lceil (n{+}1)(1-\alpha)\rceil / n$ của tập điểm calibration.
+  \item \textbf{Prediction set:} $C(x) = \{y : \text{APS score}(x,y) \le \hat q\}$.
+  \item \textbf{Luật abstain $\rightarrow$ HITL:}
+  \begin{itemize}
+    \item $|C(x)| = 1 \Rightarrow$ tự động chấp nhận.
+    \item $|C(x)| > 1$ (mơ hồ) hoặc $|C(x)| = 0$ (lạ) $\Rightarrow$ \textbf{abstain}, đẩy người duyệt.
+  \end{itemize}
+  \item \textbf{Khi có drift:} theo dõi \emph{độ phủ thực nghiệm} trên cửa sổ trượt; nếu tụt dưới $1-\alpha \Rightarrow$ recalibrate, hoặc dùng \textbf{Adaptive Conformal Inference (ACI)} cập nhật $\alpha_t$ online.
+  \item \textbf{Thư viện:} \texttt{MAPIE} (hoặc tự cài $\sim$30 dòng).
+\end{itemize}
+
+% =====================================================================
+\section{Pha 5 --- LangGraph Agent (chi tiết)}
+
+\subsection{Graph state schema}
+\begin{Verbatim}
+class AgentState(TypedDict):
+    session_id: str
+    task: str                 # nhiem vu nguoi dung
+    plan: list[str]           # buoc da phan ra
+    cursor: int               # buoc hien tai
+    messages: list            # hoi thoai (LangChain msgs)
+    retrieved: list[dict]     # so lieu lay tu tool (co provenance)
+    citations: list[dict]     # nguon trich dan
+    confidence: float
+    needs_verification: bool
+    answer: str | None
+    abstained: bool
+\end{Verbatim}
+
+\subsection{Các node \& trách nhiệm}
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.0cm} >{\raggedright\arraybackslash}p{12cm}}
+\toprule
+\textbf{Node} & \textbf{Làm gì} \\
+\midrule
+\endhead
+\texttt{planner} & Phân rã \texttt{task} thành \texttt{plan} (chọn loại nhiệm vụ + tool cần dùng). \\
+\texttt{router} & Điều phối: extract / compare / reconcile / qa; chọn tool kế tiếp theo \texttt{cursor}. \\
+\texttt{tool\_executor} & Gọi tool, ghi kết quả vào \texttt{retrieved} kèm provenance. \\
+\texttt{verifier} & Nếu \texttt{needs\_verification}: RAG quy định + web; tính \texttt{confidence}. \\
+\texttt{synthesizer} & Viết \texttt{answer} + gắn \texttt{citations}. \\
+\texttt{abstain} & Trả ``không đủ cơ sở'' khi thiếu bằng chứng / confidence thấp. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Cạnh \& điều kiện (conditional edges)}
+\begin{Verbatim}
+planner -> router
+router  -> tool_executor
+tool_executor -> router        # neu con buoc: cursor < len(plan)
+tool_executor -> verifier      # neu het buoc
+verifier -> synthesizer        # if confidence >= 0.7 and citations != []
+verifier -> tool_executor      # if thieu du lieu (can lay them)
+verifier -> abstain            # if confidence < 0.5 or no evidence
+synthesizer -> END
+abstain -> END
+\end{Verbatim}
+Hàm điều kiện ví dụ: \texttt{should\_verify(state)} trả \texttt{"verify"} nếu task chạm quy định/cờ đỏ hoặc \texttt{confidence < 0.7}.
+
+\subsection{Tools (chữ ký + luật)}
+\begin{Verbatim}
+query_graph(intent|cypher) -> rows[+provenance]
+get_lineitem(ma_so, nam)   -> {gia_tri, provenance}
+compute_ratio(name, nam)   -> {value, formula, inputs[+provenance]}
+reconcile(scope)           -> [discrepancy{a,b,delta,severity}]
+search_regulation(query)   -> [chunk{text, cite}]
+web_search(query)          -> [result{title,url,snippet}]
+\end{Verbatim}
+\begin{ghichu}
+\textbf{Luật chống ảo giác (bắt buộc):} agent CHỈ được lấy con số qua tool; cấm tự ``nhớ''/sinh số. Mọi số trong \texttt{answer} phải truy được về \texttt{provenance} của một tool-call. Synthesizer từ chối câu trả lời chứa số không có nguồn.
+\end{ghichu}
+
+\subsection{Memory store}
+\begin{itemize}
+  \item \textbf{Ngắn hạn:} \texttt{messages} trong state; khi $>$ N token $\Rightarrow$ tóm tắt (summary node) giữ ngữ cảnh.
+  \item \textbf{Dài hạn (theo session = 1 hồ sơ DN):}
+  \begin{itemize}
+    \item \textbf{Qdrant} 1 collection, record \texttt{\{session\_id, type:finding|decision|fact, content, embedding, citation, approved\_by, ts\}}; truy hồi top-k lọc theo \texttt{session\_id}.
+    \item \textbf{Postgres} bảng \texttt{approved\_findings} cho recall chính xác + audit.
+  \end{itemize}
+  \item \textbf{Checkpoint graph:} \texttt{PostgresSaver} (LangGraph) lưu state $\Rightarrow$ mở lại session, resume đúng chỗ.
+\end{itemize}
+
+% =====================================================================
+\section{Pha 6 --- Vòng HITL \& Finetune (chi tiết)}
+
+\subsection{Định dạng dữ liệu correction (JSONL)}
+\begin{Verbatim}
+{ "doc_id":"vnm_2023","report":"balance_sheet","page":4,
+  "table_id":"t1","cell":{"row":3,"col":2},
+  "field":"gia_tri",            // gia_tri | ma_so | chi_tieu
+  "predicted":"12.345.678.001","corrected":"12.345.678.901",
+  "image_crop_path":"crops/vnm_2023_p4_t1_r3c2.png",
+  "map_method_at_pred":"direct_code","confidence_at_pred":0.82,
+  "corrected_by":"analyst_03","ts":"2026-06-19T10:00:00Z" }
+\end{Verbatim}
+
+\subsection{Trigger huấn luyện lại (drift-based, không theo lịch)}
+Kích hoạt khi MỘT trong các điều kiện:
+\begin{itemize}
+  \item Độ phủ conformal thực nghiệm (cửa sổ trượt) $< 1-\alpha$ (vd $<0.90$).
+  \item PSI của phân phối confidence $> 0.2$ so với baseline.
+  \item Số correction tích lũy $\geq 50$.
+\end{itemize}
+
+\subsection{Quy trình finetune}
+\begin{enumerate}
+  \item Dựng tập train mới = synthetic gốc + toàn bộ correction (\textbf{oversample correction $\times 3$}).
+  \item Train \textbf{adapter LoRA MỚI} (\texttt{adapter\_vN+1}), KHÔNG ghi đè adapter đang chạy. Cấu hình như Pha 2.
+  \item Đánh giá trên \textbf{golden eval set ĐÓNG BĂNG} (không đổi giữa các vòng).
+  \item Đăng ký adapter + metrics vào \textbf{MLflow}.
+\end{enumerate}
+
+\subsection{Chiến lược merge \& phục vụ}
+\begin{quyetdinh}
+\dec{} Không merge vào base mặc định. Phục vụ \textbf{base + active adapter} qua \textbf{vLLM} (hot-swap LoRA). Chỉ \texttt{merge\_and\_unload} khi ra bản ổn định để giảm overhead inference. Mỗi adapter versioned, ``active'' trỏ bằng con trỏ \texttt{active\_adapter\_id} trong DB/config.
+\end{quyetdinh}
+
+\subsection{Cổng promote \& rollback}
+\begin{itemize}
+  \item \textbf{Promote} adapter mới $\rightarrow$ active CHỈ khi: accuracy golden $\geq$ active hiện tại $- \varepsilon$ (\textbf{$\varepsilon=0.5\%$}) \emph{và} không regression ở bất kỳ nhóm chỉ tiêu nào (per-category breakdown).
+  \item \textbf{Shadow trước promote:} chạy adapter mới ở chế độ shadow trên mẫu, so sánh, rồi mới đổi con trỏ.
+  \item \textbf{Rollback} = lật \texttt{active\_adapter\_id} về bản trước (O(1), không tải lại base). Giữ tối thiểu 3 bản gần nhất.
+  \item Ghi log + alert khi regression.
+\end{itemize}
+
+% =====================================================================
+\section{Pha 0/7/8/9 --- Hạ tầng, hiệu năng, đánh giá, vận hành (chi tiết ngắn)}
+
+\subsection{Pha 0 --- Hạ tầng}
+\texttt{docker-compose}: \texttt{postgres(+pgvector)}, \texttt{redis}, \texttt{minio}, \texttt{qdrant}, \texttt{neo4j}. Quản version dữ liệu/model bằng \textbf{DVC} + \textbf{MLflow}.
+
+\subsection{Pha 7 --- Hiệu năng \& song song}
+\begin{itemize}
+  \item \textbf{Celery + Redis}: 1 file = 1 task; concurrency = (số core $-2$). OCR trang song song trong file.
+  \item \textbf{Idempotency:} key = SHA-256 file; đã xử lý $\Rightarrow$ bỏ qua.
+  \item \textbf{Cache:} embedding cache (Redis); \textbf{semantic cache} câu hỏi lặp (so cosine $>0.95$ $\rightarrow$ trả cache).
+  \item \textbf{Pipeline streaming:} không chờ cả lô; file nào xong index ngay.
+  \item \textbf{Serving:} vLLM batch; \emph{fast-path} SLM rẻ, escalate model lớn khi confidence thấp.
+  \item \textbf{Mục tiêu đo:} throughput (file/phút), p95 latency truy vấn.
+\end{itemize}
+
+\subsection{Pha 8 --- Đánh giá}
+\begin{longtable}{>{\raggedright\arraybackslash}p{4.2cm} >{\raggedright\arraybackslash}p{6.2cm} >{\raggedright\arraybackslash}p{4.2cm}}
+\toprule
+\textbf{Tầng} & \textbf{Metric} & \textbf{Mục tiêu} \\
+\midrule
+OCR & CER/WER (jiwer) & CER $<3\%$ digital, $<8\%$ scan \\
+Bảng & TEDS & $>0.90$ \\
+Trích xuất số & Cell accuracy & $\geq 95\%$ \\
+Ánh xạ mã số & Mapping accuracy & $\geq 90\%$ \\
+Đối chiếu & Catch-rate (synthetic cấy lỗi) & $\geq 90\%$ \\
+Rủi ro & Backtest công ty đã vỡ/scandal & flag đúng $\geq 1$ ca \\
+Agent & \% kết luận số có trích dẫn & $100\%$ (không bịa) \\
+\bottomrule
+\end{longtable}
+
+\subsection{Pha 9 --- Vận hành}
+Langfuse (trace agent/token-cost) + Prometheus/Grafana (hệ thống); audit log mọi kết luận; phân quyền duyệt; không dùng PII thật.
+
+% =====================================================================
+\section{Phụ lục --- Bảng tổng hợp ngưỡng \& tham số}
+\begin{longtable}{>{\raggedright\arraybackslash}p{6.5cm} >{\raggedright\arraybackslash}p{8.3cm}}
+\toprule
+\textbf{Tham số} & \textbf{Giá trị mặc định} \\
+\midrule
+\endhead
+Phát hiện digital (n\_chars/trang) & $\geq 50$ \& phủ $>5\%$ \\
+Render scan & 300 DPI \\
+Fuzzy match (RapidFuzz token\_sort) & $\geq 88$ \\
+Embedding accept (cosine) & $> 0.75$ \\
+Semantic cache hit (cosine) & $> 0.95$ \\
+LoRA (Qwen2-VL-2B) & r=16, alpha=32, dropout=0.05, lr=1e-4 \\
+LoRA (Donut decoder) & r=8..16 \\
+Conformal coverage $1-\alpha$ & 0.90 \\
+Calibration set & 200--500 mẫu có nhãn người \\
+Agent verify khi & confidence $<0.7$ hoặc chạm quy định \\
+Agent abstain khi & confidence $<0.5$ hoặc không có bằng chứng \\
+Finetune trigger & coverage $<0.90$ \emph{hoặc} PSI $>0.2$ \emph{hoặc} $\geq 50$ correction \\
+Oversample correction & $\times 3$ \\
+Promote gate ($\varepsilon$) & accuracy không tụt quá $0.5\%$ \\
+Giữ adapter & $\geq 3$ bản gần nhất \\
+\bottomrule
+\end{longtable}
+
+\vspace{0.4cm}
+\begin{center}\color{fsgray}\small --- Hết bản spec chi tiết FinSight ---\end{center}
+
+\end{document}
