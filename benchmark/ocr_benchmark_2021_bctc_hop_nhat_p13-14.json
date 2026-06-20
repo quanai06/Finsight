@@ -1,0 +1,71 @@
+{
+  "doc": "2021_bctc_hop_nhat",
+  "pages": [
+    13,
+    14
+  ],
+  "aggregate": {
+    "pages_scored": 2,
+    "pages_skipped": [],
+    "macro_cer": 0.1011,
+    "macro_char_accuracy": 0.8989,
+    "macro_wer": 0.1613,
+    "macro_word_f1": 0.9202,
+    "macro_similarity": 0.8989,
+    "macro_number_f1": 1.0,
+    "micro_number": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matched": 118,
+      "pred": 118,
+      "gold": 118
+    }
+  },
+  "per_page": {
+    "page_013": {
+      "gold_chars": 1532,
+      "pred_chars": 1501,
+      "gold_words": 287,
+      "pred_words": 280,
+      "char_edits": 46,
+      "cer": 0.03,
+      "char_accuracy": 0.97,
+      "similarity": 0.97,
+      "word_edits": 18,
+      "wer": 0.0627,
+      "word_accuracy": 0.9373,
+      "word_precision": 0.9679,
+      "word_recall": 0.9443,
+      "word_f1": 0.9559,
+      "gold_numbers": 102,
+      "pred_numbers": 102,
+      "numbers_matched": 102,
+      "number_precision": 1.0,
+      "number_recall": 1.0,
+      "number_f1": 1.0
+    },
+    "page_014": {
+      "gold_chars": 459,
+      "pred_chars": 437,
+      "gold_words": 100,
+      "pred_words": 99,
+      "char_edits": 79,
+      "cer": 0.1721,
+      "char_accuracy": 0.8279,
+      "similarity": 0.8279,
+      "word_edits": 26,
+      "wer": 0.26,
+      "word_accuracy": 0.74,
+      "word_precision": 0.8889,
+      "word_recall": 0.88,
+      "word_f1": 0.8844,
+      "gold_numbers": 16,
+      "pred_numbers": 16,
+      "numbers_matched": 16,
+      "number_precision": 1.0,
+      "number_recall": 1.0,
+      "number_f1": 1.0
+    }
+  }
+}

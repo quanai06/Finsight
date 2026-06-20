@@ -24,6 +24,8 @@ data/processed/ocr/
 # ---- Large / derived data (keep data/raw, ignore the rest) ----
 data/processed/
 data/synthetic/
+# gold transcriptions are kept in git, but not the regenerable render images
+data/golden/_images/
 !data/**/.gitkeep
 
 # ---- Model weights / caches (if ever copied into the repo) ----

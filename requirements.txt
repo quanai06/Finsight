@@ -5,3 +5,4 @@ paddlex[ocr]==3.7.1          # required extras for the PaddleOCR-VL pipeline
 opencv-contrib-python==4.10.0.84
 pymupdf>=1.27                # PDF -> image rendering (no system poppler needed)
 pyyaml>=6.0                  # configs/ocr.yaml loading
+pytest>=8.0                  # tests/ (OCR evaluation suite)
