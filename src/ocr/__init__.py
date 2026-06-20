@@ -15,12 +15,16 @@ from .config import OCRConfig
 from .engine import ENGINES, OCREngine, PaddleOCRVLEngine, build_engine
 from .models import DocumentResult, PageImage, PageResult
 from .pipeline import OCRPipeline
+from .postprocess import PostProcessor, PostResult, TableRecord
 
 __all__ = [
     "OCRConfig",
     "OCRPipeline",
     "BatchProcessor",
     "FileOutcome",
+    "PostProcessor",
+    "PostResult",
+    "TableRecord",
     "OCREngine",
     "PaddleOCRVLEngine",
     "build_engine",
