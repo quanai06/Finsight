@@ -9,7 +9,7 @@ dpi: 200            # raise to 300-400 if Vietnamese diacritics look weak
 
 # engine
 engine: paddleocr-vl
-device: cpu         # no local GPU; switch to "gpu" on a CUDA machine
+device: auto        # auto-detect: GPU if available, else CPU
 
 # run control
 max_pages: 3        # cap pages for a quick CPU test; set null for the whole file

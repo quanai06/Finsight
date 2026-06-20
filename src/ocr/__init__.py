@@ -10,6 +10,7 @@ Quick start:
     print(doc.to_markdown())
 """
 
+from .batch import BatchProcessor, FileOutcome
 from .config import OCRConfig
 from .engine import ENGINES, OCREngine, PaddleOCRVLEngine, build_engine
 from .models import DocumentResult, PageImage, PageResult
@@ -18,6 +19,8 @@ from .pipeline import OCRPipeline
 __all__ = [
     "OCRConfig",
     "OCRPipeline",
+    "BatchProcessor",
+    "FileOutcome",
     "OCREngine",
     "PaddleOCRVLEngine",
     "build_engine",

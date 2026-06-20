@@ -19,6 +19,23 @@ from .models import PageResult
 logger = logging.getLogger(__name__)
 
 
+def resolve_device(device: str = "auto") -> str:
+    """Map ``"auto"`` to ``"gpu"`` when a CUDA device is present, else ``"cpu"``.
+
+    ``"cpu"`` / ``"gpu"`` are returned unchanged so the user can always force one.
+    """
+    if device != "auto":
+        return device
+    try:
+        import paddle
+
+        if paddle.device.is_compiled_with_cuda() and paddle.device.cuda.device_count() > 0:
+            return "gpu"
+    except Exception:  # noqa: BLE001 — any failure -> safe CPU fallback
+        pass
+    return "cpu"
+
+
 def _markdown_to_text(md: Any) -> str:
     """Extract the Markdown string from PaddleOCR's result object across versions."""
     if isinstance(md, str):
@@ -53,8 +70,9 @@ class PaddleOCRVLEngine(OCREngine):
 
     name = "paddleocr-vl"
 
-    def __init__(self, device: str = "cpu", **pipeline_kwargs: Any) -> None:
-        self.device = device
+    def __init__(self, device: str = "auto", **pipeline_kwargs: Any) -> None:
+        self.device = device                 # as requested ("auto"/"cpu"/"gpu")
+        self.resolved_device: str | None = None  # actual device after detection
         self._pipeline_kwargs = pipeline_kwargs
         self._pipeline = None  # lazy
 
@@ -63,10 +81,14 @@ class PaddleOCRVLEngine(OCREngine):
             return
         from paddleocr import PaddleOCRVL  # lazy heavy import
 
+        self.resolved_device = resolve_device(self.device)
+        if self.device == "auto":
+            logger.info("Device auto-detect -> %s", self.resolved_device)
         t0 = time.perf_counter()
-        self._pipeline = PaddleOCRVL(device=self.device, **self._pipeline_kwargs)
+        self._pipeline = PaddleOCRVL(device=self.resolved_device,
+                                     **self._pipeline_kwargs)
         logger.info("PaddleOCR-VL loaded on %s in %.1fs",
-                    self.device, time.perf_counter() - t0)
+                    self.resolved_device, time.perf_counter() - t0)
 
     def recognize(self, image_path: Path, index: int) -> PageResult:
         if self._pipeline is None:
@@ -92,7 +114,7 @@ ENGINES: dict[str, Callable[..., OCREngine]] = {
 }
 
 
-def build_engine(name: str, device: str = "cpu", **kwargs: Any) -> OCREngine:
+def build_engine(name: str, device: str = "auto", **kwargs: Any) -> OCREngine:
     try:
         factory = ENGINES[name]
     except KeyError:

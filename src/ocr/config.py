@@ -25,7 +25,7 @@ class OCRConfig:
 
     # --- engine ---
     engine: str = "paddleocr-vl"           # registry key (see engine.ENGINES)
-    device: str = "cpu"                    # "cpu" or "gpu"
+    device: str = "auto"                   # "auto" (detect GPU) | "cpu" | "gpu"
 
     # --- run control ---
     first_page: Optional[int] = None       # 1-based start page (inclusive)
