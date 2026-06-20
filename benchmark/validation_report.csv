@@ -1,0 +1,258 @@
+severity,file,table,row,ma_so,label,column,value,rule,detail
+high,2021,6,4,,- Cổ phiếu ưu đại,"cols 3,4",623.385,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2021,7,4,20,5. Lợi nhuận gộp về bán hàng và cung cấp dịch vụ,Thuyết minh,34.064.705,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2021,7,4,20,5. Lợi nhuận gộp về bán hàng và cung cấp dịch vụ,"cols 2,3",34.064.705,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2021,9,2,,"Khẩu hao tài sản có định hữu hình và bất động sản đâu tư, ha",Thuyết minh,14.919.628,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2021,10,1,,"Tiền thu tử phát hành cổ phiếu, nhận vốn góp của chủ sở hữu ",Thuyết minh,20.461.915,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2021,14,18,,hoãn lại phải trả,"cols 2,3",324.510,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2021,19,5,,Dự phòng phải thu về cho vay ngắn hạn khó đòi,"cols 1,2",-70.638,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2021,21,13,,Đặt cọc thực hiện hợp đồng hợp tác kinh doanh,"cols 1,2",73.367,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2021,42,11,,Dự phòng phải trả khác,"cols 1,2",2.016,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2021,43,7,,Mua công ty con mới,"cols 8,9",159.903,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2021,43,8,,"Chuyển nhượng, giải thể công ty con","cols 8,9",376.543,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2021,43,10,,Góp vốn từ cổ động không kiểm soát (v),"cols 8,9",10.382.468,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2021,43,11,,"Cổ tức, lợi nhuận chia bởi các công ty con cho cổ động không","cols 8,9",-1.718.207,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2021,44,2,,(1.344.123),"cols 0,1",-1.344.123,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2021,46,4,,Cổ phiếu ưu đãi,"cols 1,2",62.338.466,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2021,46,7,,Cổ phiếu ưu đãi,"cols 1,2",62.338.466,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2022,-1,-1,,các khoản dự phòng,Năm trước (vs 2021),10.100.081,cross_year_mismatch,2022 'năm trước'=10.100.081 ≠ 2021 'năm nay'=-7.287.409 (có thể do trình bày lại)
+high,2022,-1,-1,,tiền lãi vay đã trả,Năm trước (vs 2021),-9.217.300,cross_year_mismatch,2022 'năm trước'=-9.217.300 ≠ 2021 'năm nay'=-10.731.071 (có thể do trình bày lại)
+high,2022,5,6,414,3. Vốn khác của chủ sở hữu,"cols 3,4",18.481.872,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2022,5,7,415,4. Cổ phiếu quỹ,"cols 3,4",-1.344.123,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2022,6,7,23,Trong đó: Chi phí lãi vay và chi phí phát hành,Thuyết minh,(10.944.221),big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2022,9,1,32,Lưu chuyển tiền thuần từ hoạt động tài chính,Thuyết minh,(3.382.021),big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2022,9,2,33,Lưu chuyển tiền thuần trong năm,Thuyết minh,31.751.891,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2022,9,3,34,Lưu chuyển tiền thuần trong năm,Thuyết minh,7.959.840,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2022,9,4,35,Lưu chuyển tiền thuần trong năm,Thuyết minh,18.352.236,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2022,9,5,36,Lưu chuyển tiền thuần trong năm,Thuyết minh,(98.774),big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2022,9,6,37,Tiền và tương đương tiền đầu năm,Thuyết minh,26.213.302,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2022,14,1,,Tiền gửi có kỳ hạn (i),"cols 1,2",1.994.665,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2022,14,2,,Các khoản đầu tư khác (ii),"cols 1,2",2.388.268,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2022,14,3,,TỔNG CỘNG,"cols 1,2",4.382.933,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2022,23,11,,Khẩu hao trong năm,"cols 6,7",-1.120.095,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2022,31,1,,"(""Công ty Hoàng Gia"")","cols 4,5",-83.775,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2022,31,4,,(83.775),"cols 4,5",-83.775,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2022,31,8,,(46.599),"cols 4,5",-46.599,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2022,41,5,,uy đổi một phần lợi ích,"cols 8,9",159.903,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2022,41,7,,ên kiểm soát vốn từ cổ đồng,"cols 8,9",10.382.468,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2022,41,8,,"ng kiểm soát tức, lợi nhuận chia các công ty con cho","cols 8,9",-1.718.207,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2022,42,6,,số lợi nhuận của bội công tụy con cho cổ không kiểm soát (iv,"cols 8,9",4.723.482,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2022,42,7,,số lợi chác quỹ khác,"cols 8,9",-3.382.021,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2022,43,3,,Cổ phiếu quỹ,"cols 1,2",-1.344.123,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2022,45,5,,Số lượng cổ phiếu được mua lại (cổ phiếu quỹ),"cols 1,2",103.645.482,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2022,45,6,,Cổ phiếu phổ thông,"cols 1,2",103.645.482,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2022,73,5,,- Hryvnia Ukrainas,"cols 1,2",15.048,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2023,-1,-1,,các khoản tương đương tiền,Năm trước (vs 2022),18.316.977,cross_year_mismatch,2023 'năm trước'=18.316.977 ≠ 2022 'năm nay'=7.896.325 (có thể do trình bày lại)
+high,2023,-1,-1,,trả trước cho người bán ngắn hạn,Năm trước (vs 2022),25.276.287,cross_year_mismatch,2023 'năm trước'=25.276.287 ≠ 2022 'năm nay'=37.954.852 (có thể do trình bày lại)
+high,2023,-1,-1,,phải thu về cho vay ngắn hạn,Năm trước (vs 2022),37.954.852,cross_year_mismatch,2023 'năm trước'=37.954.852 ≠ 2022 'năm nay'=8.256.866 (có thể do trình bày lại)
+high,2023,-1,-1,,phải thu ngắn hạn khác,Năm trước (vs 2022),8.256.866,cross_year_mismatch,2023 'năm trước'=8.256.866 ≠ 2022 'năm nay'=55.864.370 (có thể do trình bày lại)
+high,2023,-1,-1,,dự phòng phải thu ngắn hạn khó đòi,Năm trước (vs 2022),55.864.370,cross_year_mismatch,2023 'năm trước'=55.864.370 ≠ 2022 'năm nay'=-1.120.358 (có thể do trình bày lại)
+high,2023,-1,-1,,phải trả ngắn hạn khác,Năm trước (vs 2022),75.558.793,cross_year_mismatch,2023 'năm trước'=75.558.793 ≠ 2022 'năm nay'=67.921.473 (có thể do trình bày lại)
+high,2023,-1,-1,,vay ngắn hạn,Năm trước (vs 2022),15.314.812,cross_year_mismatch,2023 'năm trước'=15.314.812 ≠ 2022 'năm nay'=-34.376.185 (có thể do trình bày lại)
+high,2023,-1,-1,,vay dài hạn đến hạn trả,Năm trước (vs 2022),16.086.798,cross_year_mismatch,2023 'năm trước'=16.086.798 ≠ 2022 'năm nay'=-6.795.198 (có thể do trình bày lại)
+high,2023,-1,-1,,trái phiếu dài hạn đến hạn trả,Năm trước (vs 2022),9.192.847,cross_year_mismatch,2023 'năm trước'=9.192.847 ≠ 2022 'năm nay'=-11.000.000 (có thể do trình bày lại)
+high,2023,-1,-1,,trái phiếu dài hạn,Năm trước (vs 2022),58.393.968,cross_year_mismatch,2023 'năm trước'=58.393.968 ≠ 2022 'năm nay'=-11.871.918 (có thể do trình bày lại)
+high,2023,5,4,,- Cổ phiếu ưu đãi,"cols 3,4",549.217,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2023,5,7,415,4. Cổ phiếu quỹ,"cols 3,4",-1.344.123,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2023,8,1,01,Lợi nhuận trước thuế Điều chỉnh cho các khoản:,Thuyết minh,13.769.352,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,8,2,02,"Kháu hao tài sản có định hữu hình và bất động sản đâu tư, ha",Thuyết minh,17.605.842,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,8,3,03,Các khoản dự phòng,Thuyết minh,6.442.431,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,8,4,04,Lỗ chênh lệch tỷ giá hối đoái do đánh giá lại các khoản mục ,Thuyết minh,2.523.845,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,8,5,05,Lãi tử hoạt động đấu tư,Thuyết minh,(17.296.045),big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,8,7,08,Lợi nhuận tử hoạt động kinh doanh trước thay đổi vốn lưu độn,Thuyết minh,40.291.296,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,8,8,09,Tăng các khoản phải thu,Thuyết minh,(50.508.784),big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,8,9,10,Tăng hàng tôn kho,Thuyết minh,(9.345.650),big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,8,10,11,"Tăng các khoản phải trả (không kể lãi vay phải trả, thuê thu",Thuyết minh,17.867.029,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,8,11,12,Giám/ (tăng) chi phí trả trước,Thuyết minh,650.334,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,8,12,13,Giám chứng khoản kinh doanh,Thuyết minh,2.352.947,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,8,13,14,Tiền lãi vay đã trả,Thuyết minh,(14.438.520),big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,8,14,15,Thuế thu nhập doanh nghiệp đã nộp,Thuyết minh,(6.880.320),big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,8,15,20,Lưu chuyển tiền thuần (sử dụng vào)/từ hoạt động kinh doanh,Thuyết minh,(20.011.668),big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,8,17,21,"Tiền chi đề mua sắm, xây dựng tài sản có định và các tài sản",Thuyết minh,(54.548.151),big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,8,18,22,"Tiền thu do thanh lý, nhượng bán tài sản có định và các tài ",Thuyết minh,5.774.148,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,8,19,23,"Tiền chi cho vay, mua các công cụ nợ của đơn vị khác",Thuyết minh,(13.925.224),big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,8,20,24,"Tiền thu hồi cho vay, bán lại công cụ nợ của đơn vị khác",Thuyết minh,12.921.899,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,8,21,25,Tiền chi đầu tư góp vốn vào đơn vị khác (trừ đi tiên thu về),Thuyết minh,(26.339.194),big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,8,22,26,Tiền thu hồi đấu tư góp vốn vào đơn vị khác (trừ đi tiên do ,Thuyết minh,47.294.434,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,8,23,27,"Tiền thu lãi cho vay, lãi tiền gửi và cổ tức, lợi nhuận được",Thuyết minh,1.836.680,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,8,24,30,Lưu chuyển tiền thuần sử dụng vào hoạt động đầu tư,Thuyết minh,(26.985.408),big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,9,5,40,Lưu chuyển tiền thuần từ hoạt động tài chính,Thuyết minh,48.718.276,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,9,6,50,Lưu chuyển tiền thuần trong năm,Thuyết minh,1.721.200,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,9,7,60,Tiền và tương đương tiền đầu năm,Thuyết minh,26.213.302,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,9,8,61,Ănh hưởng của thay đổi tỷ giá hối đoái quy đổi ngoại tệ,Thuyết minh,48.121,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2023,12,1,,Tiền gửi có kỳ hạn (i),"cols 1,2",2.352.924,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2023,12,2,,Trái phiếu ngắn hạn (ii),"cols 1,2",2.277.479,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2023,12,3,,Các khoản đầu tư khác (iii),"cols 1,2",2.368.268,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2023,12,4,,TỔNG CỘNG,"cols 1,2",6.998.671,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2023,39,4,,Giá trị trái phiếu hoán đổi,"cols 4,5",9.501.445,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2023,39,6,,Cơ cấu nợ gốc ghi nhận ban đầu,"cols 4,5",9.501.445,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2023,41,5,,4.723.482,"cols 8,9",4.723.482,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2023,41,6,,suận chia ty con cho ng kiểm soát,"cols 8,9",-3.382.021,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2023,42,5,,10.740.611,"cols 7,8",10.740.611,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2023,43,3,,Cổ phiếu quỹ,"cols 1,2",-1.344.123,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2023,44,10,,Cổ phiếu ưu đãi,"cols 1,2",54.921.745,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2023,44,11,,Số lượng cổ phiếu được mua lại (cổ phiếu quỹ),"cols 1,2",103.645.482,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2023,44,12,,Cổ phiếu phổ thông,"cols 1,2",103.645.482,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2023,44,15,,Cổ phiếu ưu đãi,"cols 1,2",54.921.745,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2023,70,7,,(33.078.158),"cols 4,5",48.694,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2023,72,9,,- Hryvnia Ukraina,"cols 1,2",15.048,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,-1,-1,,các khoản tương đương tiền,Năm trước (vs 2023),26.529.351,cross_year_mismatch,2024 'năm trước'=26.529.351 ≠ 2023 'năm nay'=1.453.272 (có thể do trình bày lại)
+high,2024,-1,-1,,trả trước cho người bán ngắn hạn,Năm trước (vs 2023),37.390.279,cross_year_mismatch,2024 'năm trước'=37.390.279 ≠ 2023 'năm nay'=27.473.498 (có thể do trình bày lại)
+high,2024,-1,-1,,phải thu về cho vay ngắn hạn,Năm trước (vs 2023),7.637.650,cross_year_mismatch,2024 'năm trước'=7.637.650 ≠ 2023 'năm nay'=37.390.279 (có thể do trình bày lại)
+high,2024,-1,-1,,phải thu ngắn hạn khác,Năm trước (vs 2023),96.748.810,cross_year_mismatch,2024 'năm trước'=96.748.810 ≠ 2023 'năm nay'=7.637.650 (có thể do trình bày lại)
+high,2024,-1,-1,,dự phòng phải thu ngắn hạn khó đòi,Năm trước (vs 2023),-1.135.506,cross_year_mismatch,2024 'năm trước'=-1.135.506 ≠ 2023 'năm nay'=96.748.810 (có thể do trình bày lại)
+high,2024,-1,-1,,tài sản ngắn hạn khác,Năm trước (vs 2023),292.336,cross_year_mismatch,2024 'năm trước'=292.336 ≠ 2023 'năm nay'=36.094.273 (có thể do trình bày lại)
+high,2024,-1,-1,,vốn góp từ cổ đông,Năm trước (vs 2023),38.236.616,cross_year_mismatch,2024 'năm trước'=38.236.616 ≠ 2023 'năm nay'=38.785.833 (có thể do trình bày lại)
+high,2024,3,2,411,1. Vốn cổ phần đã phát hành,"cols 3,4",38.785.833,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,3,4,,biểu quyết,"cols 3,4",38.236.616,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,3,5,,- Cổ phiếu ưu đãi,"cols 3,4",549.217,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,3,8,415,4. Cổ phiếu quỹ,"cols 3,4",-1.344.123,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,7,1,40,Lưu chuyển tiền thuần tử hoạt động tài chính,Thuyết minh,10.934.354,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2024,7,2,50,Lưu chuyển tiền và tương đương tiền thuần trong năm,Thuyết minh,14.937.764,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2024,7,3,60,Tiền và tương đương tiền đầu năm,Thuyết minh,27.982.623,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2024,7,4,61,Ănh hưởng của thay đổi tỷ giá hối đoái quy đổi ngoại tệ,Thuyết minh,(338.021),big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2024,14,1,,Cổ phần (i),"cols 1,2",1.500.000,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,14,3,,đầu tư khác (ii),"cols 1,2",2.128.250,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,14,4,,TỔNG CỘNG,"cols 1,2",3.628.250,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,15,1,,Tiền gửi có kỳ han (i),"cols 1,2",5.090.634,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,15,2,,Trái phiếu ngắn hạn,"cols 3,4",2.277.479,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,15,3,,Các khoản đầu tư khác,"cols 3,4",2.368.268,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,15,4,,TỔNG CỘNG,"cols 1,2",5.090.634,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,19,8,,"Phải thu từ việc chuyển giao hợp đồng mua, bán nợ","cols 1,2",821.600,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,23,23,,Đặt cọc cho mục đích thương mại (iii),"cols 1,2",1.032.337,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,31,0,,4.761.841,"cols 3,4",4.761.841,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,31,2,,(395.694),"cols 3,4",-395.694,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,31,4,,4.269.216,"cols 3,4",4.269.216,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,31,6,,(350.416),"cols 3,4",-350.416,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,41,4,,Giá trị trái phiếu hoán đổi,"cols 4,5",9.501.445,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,41,6,,Cơ cấu nợ gốc ghi nhận ban đầu,"cols 4,5",9.501.445,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,44,9,,n tủ cổ đông,"cols 8,9",10.740.611,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,45,4,,Cổ phiếu quỹ,"cols 1,2",-1.344.123,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,46,3,,Số cuối năm,"cols 1,2",38.785.833,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,46,6,,Sổ lượng cổ phiếu đăng ký phát hành,"cols 1,2",3.878.583.306,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,46,7,,Sổ lượng cổ phiếu đã bán ra công chúng,"cols 1,2",3.878.583.306,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,46,8,,Cổ phiếu phổ thông,"cols 1,2",3.823.661.561,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,46,9,,Cổ phiếu uư đãi,"cols 1,2",54.921.745,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,46,10,,Sổ lượng cổ phiếu được mua lại (cổ phiếu quỹ),"cols 1,2",103.645.482,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,46,11,,Cổ phiếu phổ thông,"cols 1,2",103.645.482,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,46,12,,Sổ lượng cổ phiếu đang lưu hành,"cols 1,2",3.774.937.824,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,46,13,,Cổ phiếu phổ thông,"cols 1,2",3.720.016.079,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,46,14,,Cổ phiếu uư đãi,"cols 1,2",54.921.745,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,61,14,,Phải thu từ chia sẻ lợi nhuận hợp đồng hợp tác kinh doanh,"cols 3,4",51.326,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,70,2,,Cổ tức cổ phiếu ưu đãi,"cols 1,2",-60.950,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2024,75,13,,- Hryvnia Ukrainá,"cols 1,2",15.048,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2025,-1,-1,,tài sản ngắn hạn khác,Năm trước (vs 2024),25.937.361,cross_year_mismatch,2025 'năm trước'=25.937.361 ≠ 2024 'năm nay'=312.596 (có thể do trình bày lại)
+high,2025,-1,-1,,lãi cơ bản trên cổ phiếu,Năm trước (vs 2024),1.523,cross_year_mismatch,2025 'năm trước'=1.523 ≠ 2024 'năm nay'=3.045 (có thể do trình bày lại)
+high,2025,-1,-1,,lãi suy giảm trên cổ phiếu,Năm trước (vs 2024),1.488,cross_year_mismatch,2025 'năm trước'=1.488 ≠ 2024 'năm nay'=2.976 (có thể do trình bày lại)
+high,2025,-1,-1,,các khoản dự phòng,Năm trước (vs 2024),22.627.124,cross_year_mismatch,2025 'năm trước'=22.627.124 ≠ 2024 'năm nay'=10.427.372 (có thể do trình bày lại)
+high,2025,-1,-1,,lỗ chênh lệch tỷ giá hối đoái do đánh giá lại các ,Năm trước (vs 2024),10.427.372,cross_year_mismatch,2025 'năm trước'=10.427.372 ≠ 2024 'năm nay'=2.567.767 (có thể do trình bày lại)
+high,2025,-1,-1,,tăng các khoản phải thu,Năm trước (vs 2024),32.282.622,cross_year_mismatch,2025 'năm trước'=32.282.622 ≠ 2024 'năm nay'=-95.017.737 (có thể do trình bày lại)
+high,2025,-1,-1,,tăng hàng tồn kho,Năm trước (vs 2024),-95.017.737,cross_year_mismatch,2025 'năm trước'=-95.017.737 ≠ 2024 'năm nay'=-23.011.001 (có thể do trình bày lại)
+high,2025,-1,-1,,tiền lãi vay đã trả,Năm trước (vs 2024),-450.000,cross_year_mismatch,2025 'năm trước'=-450.000 ≠ 2024 'năm nay'=-23.899.300 (có thể do trình bày lại)
+high,2025,-1,-1,,thuế thu nhập doanh nghiệp đã nộp,Năm trước (vs 2024),-23.899.300,cross_year_mismatch,2025 'năm trước'=-23.899.300 ≠ 2024 'năm nay'=-11.845.057 (có thể do trình bày lại)
+high,2025,-1,-1,,tiền và tương đương tiền cuối năm,Năm trước (vs 2024),-338.021,cross_year_mismatch,2025 'năm trước'=-338.021 ≠ 2024 'năm nay'=42.582.366 (có thể do trình bày lại)
+high,2025,3,6,414,3. Vốn khác của chủ sở hữu,"cols 3,4",15.306.530,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2025,3,7,415,4. Cổ phiếu quỹ,"cols 3,4",-1.344.123,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2025,7,0,31,III. LUỦ CHUYẾN TIÊN TỪ HOẠT ĐỘNG TÀI CHÍNH\nTiền thu tử phá,Thuyết minh,2.267.028,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2025,7,1,40,Lưu chuyển tiền thuần từ hoạt động tài chỉnh,Thuyết minh,(2.577.141),big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2025,7,2,50,Lưu chuyển tiền và tương đương tiền thuần trong năm,Thuyết minh,101.619.123,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2025,7,3,60,Tiền và tương đương tiền đầu năm,Thuyết minh,30.935.609,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2025,7,4,61,Ănh hướng của thay đổi tỷ giá hối đoái quy đổi ngoại tệ,Thuyết minh,42.582.366,big_num_in_ref_col,cột Thuyết minh chứa số lớn → OCR điền nhầm ô
+high,2025,11,1,,Chứng khoán\nkinh doanh (i)\nCác khoản\ndầu tư khác,"cols 1,2",1.583.614,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2025,11,3,,TỔNG CỘNG,"cols 1,2",1.583.614,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2025,12,1,,8.254.830,"cols 1,2",8.254.830,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2025,12,2,,Tiền gửi có kỳ hạn (i),"cols 1,2",8.254.830,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2025,12,5,,Tiền gửi có kỳ hạn (ii),"cols 1,2",368.150,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2025,12,6,,TỔNG CỘNG,"cols 1,2",368.150,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2025,16,4,,Phải thu hợp đồng Xây dựng-Chuyển giao (iii),"cols 1,2",10.079.466,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2025,21,7,,Đặt cọc cho mục đích thương mại,"cols 1,2",1.032.337,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2025,24,8,,Đã khấu hao hết,"cols 2,3",293.279,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2025,35,9,,Doanh thu chưa thực hiện từ hoạt động tổng thầu xây dựng,"cols 1,2",490.199,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2025,35,32,,Đặt cọc cho hoạt động đầu tư,"cols 1,2",754.133,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2025,43,4,,Giá trị trái phiếu hoán đổi,"cols 1,2",3.631.150,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2025,43,6,,Cơ cấu nợ gốc ghi nhận ban đầu,"cols 1,2",3.631.150,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2025,45,3,,Cổ phiếu quỹ,"cols 1,2",-1.344.123,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2025,45,9,,Số đầu năm,"cols 1,2",38.785.833,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2025,63,7,,Phải thu từ hợp đồng xây dựng,"cols 3,4",140.534,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2025,64,10,,92.706,"cols 3,4",92.706,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+high,2025,66,9,,Nhận đặt cọc cho hoạt động chuyển nhượng dự án bắt động sản,"cols 3,4",194.100,adjacent_duplicate,hai ô số kề nhau trùng giá trị
+low,2021,10,1,,"Tiền thu tử phát hành cổ phiếu, nhận vốn góp của chủ sở hữu ",4/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2021,41,12,,Trừ: Lãi chênh lệch tỷ giá đánh giá lại cuối năm,3/6 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2021,41,13,,Mua lại trong năm,3/6 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2022,9,1,32,Lưu chuyển tiền thuần từ hoạt động tài chính,4/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2022,9,2,33,Lưu chuyển tiền thuần trong năm,4/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2022,9,3,34,Lưu chuyển tiền thuần trong năm,4/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2022,9,4,35,Lưu chuyển tiền thuần trong năm,4/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2022,9,5,36,Lưu chuyển tiền thuần trong năm,4/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2022,9,6,37,Tiền và tương đương tiền đầu năm,4/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2022,9,7,38,Tiền và tương đương tiền đầu năm,4/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2022,30,11,,10.691.516,8/10 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2022,56,2,,Phải thu từ tạm ứng,3/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2022,56,6,,24.429.340,2/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2022,56,11,,"Phải thu liên quan đến cung cấp dịch vụ, hàng hóa",3/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2022,56,16,,132.582,2/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2022,56,18,,221.348,2/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2022,61,4,,Phải trả ngắn hạn khác (Thuyết minh số 25),3/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2022,61,7,,Phải trả dài hạn khác (Thuyết minh số 25),3/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2022,71,2,,620.254,4/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,9,5,40,Lưu chuyển tiền thuần từ hoạt động tài chính,4/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,9,6,50,Lưu chuyển tiền thuần trong năm,4/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,9,7,60,Tiền và tương đương tiền đầu năm,4/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,9,8,61,Ănh hưởng của thay đổi tỷ giá hối đoái quy đổi ngoại tệ,4/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,27,17,,13.892.460,9/11 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,34,3,,37.204.314,2/3 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,34,4,,10.890.737,2/3 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,34,5,,5.831.960,2/3 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,34,6,,1.927.032,2/3 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,34,10,,122.710.487,2/3 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,34,14,,1.113.643,2/3 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,39,11,,Cộng: Lỗ chênh lệch tỷ giá đánh giá lại số dư cuối năm,3/6 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,39,12,,Cơ cấu nợ gốc tại ngày cuối năm,3/6 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,41,1,,(13.040),9/10 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,41,2,,(6.737.517),9/10 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,57,8,,Phải thu dài hạn của khác hàng (Thuyết minh số 7.1),3/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,70,3,,(5.318.136),8/10 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,70,4,,(5.318.136),9/10 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,79,0,53,Khu đô thị Vinhomes Riverside $ ^{(1)} $,7/8 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,79,1,54,Công ty TNHH Dịch vụ Vận tải Sinh thái Vinbus,7/8 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,79,2,55,Công ty VinFast Auto Ltd. (tên trước đây là Công ty VinFast ,7/8 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,79,3,56,"Khu Kinh tế Đình Vũ - Cát Hải, Đảo Cát Hải, Thị trấn Cát Hải",7/8 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,79,4,57,"→ Mua bán, xuất nhập khẩu thiết bị, linh kiện vật tư, phụ tù",7/8 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,79,5,58,"→ Thiết kế ô tô, xe máy, hợp tác nghiên cứu công nghệ và nhậ",7/8 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,79,6,59,Công ty Cổ phân Vingroup Investment Việt Nam,7/8 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,79,7,60,Công ty TNHH Kinh doanh Thương mại và Dịch vụ VinFast,7/8 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,79,8,61,"333 W. San Carlos St., Suite 600, San Jose, CA 95110, My",7/8 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,79,9,62,"790 N. San Mateo Drive, San Mateo, CA 94401, My",7/8 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,79,21,72,"21 Holborn Viaduct, London, EC1A 2DY, Anh",7/8 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,79,22,73,"Level 29, The Offices at CentralWorld, 999/9 Rama I Road Khw",7/8 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,79,23,74,"Jebel Ali Freezone, Dubai, United Arab Emirates",7/8 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,79,24,75,"Khu Kinh tế Đình Vũ – Cát Hải, Đảo Cát Hải, Thi trấn Cát Hải",7/8 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,79,25,76,"Khu Kinh tế Vũng Áng, Xã Kỳ Lợi, Thi xã Kỳ Anh, Tỉnh Hà Tĩnh",7/8 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,79,26,77,"850 New Burton Road, Suite 201, Dover, Delaware 19904, Kent ",7/8 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,79,27,78,"Lô CN1-06B-1&2 Khu Công nghiệp Công nghệ cao 1, Khu Công ngh",7/8 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,79,28,79,Công ty Vinsmart Trading and Investment Pte. Ltd.,7/8 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,79,29,80,"Nhập khẩu phân phối hàng hóa, hợp tác nghiên cứu công nghệ",7/8 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,79,30,81,"120 Lower Delta Road, #02-05, Cendex Centre, Singapore",7/8 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2023,79,31,82,Nghiên cứu và phát triển thực nghiêm khoa học tự nhiên và kỹ,7/8 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2024,7,1,40,Lưu chuyển tiền thuần tử hoạt động tài chính,4/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2024,7,2,50,Lưu chuyển tiền và tương đương tiền thuần trong năm,4/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2024,7,3,60,Tiền và tương đương tiền đầu năm,4/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2024,7,4,61,Ănh hưởng của thay đổi tỷ giá hối đoái quy đổi ngoại tệ,4/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2024,41,11,,Cộng: Lỗ chênh lệch tỷ giá đánh giá lại số dư cuối năm,3/6 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2024,58,4,,164.984,2/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2024,58,5,,121.437,2/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2024,61,10,,Phải thu ngắn hạn khác (Thuyết minh số 9),3/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2024,63,10,,Phải trả dài hạn khác (Thuyết minh số 25),3/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2025,7,1,40,Lưu chuyển tiền thuần từ hoạt động tài chỉnh,4/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2025,7,2,50,Lưu chuyển tiền và tương đương tiền thuần trong năm,4/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2025,7,3,60,Tiền và tương đương tiền đầu năm,4/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2025,7,4,61,Ănh hướng của thay đổi tỷ giá hối đoái quy đổi ngoại tệ,4/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2025,43,4,,Giá trị trái phiếu hoán đổi,3/6 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2025,43,6,,Cơ cấu nợ gốc ghi nhận ban đầu,3/6 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2025,43,8,,Số đầu năm,3/6 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2025,43,9,,Số tăng trong năm,3/6 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2025,43,10,,Số cuối năm,3/6 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2025,43,12,,Trừ: Thực hiện mua lại trước hạn và thanh toán bằng tiền đối,3/6 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2025,48,2,,(138.525),4/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2025,62,1,,Tài trợ cho công ty con của Tập đoàn,3/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
+low,2025,66,5,,Phải trả dài hạn khác (Thuyết minh số 25),3/5 cols,,ragged_row,số cột khác header → bảng có thể bị vỡ
