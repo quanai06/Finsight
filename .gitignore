@@ -1,0 +1,43 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# ---- Virtual envs ----
+.venv/
+venv/
+env/
+
+# ---- OCR pipeline artifacts (regenerable) ----
+# rendered page images — bulky, recreated from data/raw on every run
+data/processed/ocr/_pages/
+data/processed/ocr/**/imgs/
+# generated OCR output (Markdown / per-page md / perf reports)
+data/processed/ocr/
+# keep the folder skeleton in git
+!data/processed/.gitkeep
+
+# ---- Large / derived data (keep data/raw, ignore the rest) ----
+data/processed/
+data/synthetic/
+!data/**/.gitkeep
+
+# ---- Model weights / caches (if ever copied into the repo) ----
+*.pdparams
+*.pdiparams
+*.onnx
+.paddlex/
+.paddleocr/
+
+# ---- Logs & temp ----
+*.log
+.cache/
+
+# ---- OS / editor ----
+.DS_Store
+.idea/
+.vscode/

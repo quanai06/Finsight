@@ -1,0 +1,17 @@
+# Default config for the OCR pipeline (src/ocr).
+# Run with:  python -m src.ocr --config configs/ocr.yaml
+input_path: data/raw/2021_bctc_hop_nhat.pdf
+output_dir: data/processed/ocr
+work_dir: data/processed/ocr/_pages
+
+# rendering
+dpi: 200            # raise to 300-400 if Vietnamese diacritics look weak
+
+# engine
+engine: paddleocr-vl
+device: cpu         # no local GPU; switch to "gpu" on a CUDA machine
+
+# run control
+max_pages: 3        # cap pages for a quick CPU test; set null for the whole file
+save_page_markdown: true
+page_separators: true
