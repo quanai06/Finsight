@@ -12,5 +12,11 @@ fastapi>=0.115              # REST API
 uvicorn[standard]>=0.30     # ASGI server
 python-multipart>=0.0.9     # multipart/form-data file uploads
 httpx>=0.27                 # Groq (LLM) API calls
-scikit-learn>=1.4           # TF-IDF retrieval index
-numpy>=1.26                 # vector math for retrieval
+numpy>=1.26                 # vector math
+
+# RAG stack: dense retrieval + rerank + vector DB + relational store + cache
+fastembed>=0.4              # bge-m3 embeddings + bge-reranker (ONNX, CPU)
+qdrant-client>=1.12,<1.13   # match the Qdrant server image in docker-compose
+sqlalchemy>=2.0             # ORM for Postgres (sessions/documents/chat)
+psycopg[binary]>=3.2        # PostgreSQL driver
+redis>=5.0                  # short-term conversational memory

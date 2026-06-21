@@ -1,0 +1,52 @@
+# Infrastructure for the Finsight RAG backend.
+#   Postgres  — sessions, documents, durable chat history
+#   Qdrant    — dense vector store (bge-m3 embeddings)
+#   Redis     — short-term conversational memory (sliding window + TTL)
+#
+# Start:  docker compose -f docker/docker-compose.yml up -d
+# Stop:   docker compose -f docker/docker-compose.yml down
+# Data persists in named volumes below.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: finsight-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: finsight
+      POSTGRES_PASSWORD: finsight
+      POSTGRES_DB: finsight
+    ports:
+      - "5432:5432"
+    volumes:
+      - finsight_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U finsight"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  qdrant:
+    image: qdrant/qdrant:v1.12.4
+    container_name: finsight-qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"   # REST
+      - "6334:6334"   # gRPC
+    volumes:
+      - finsight_qdrant:/qdrant/storage
+
+  redis:
+    image: redis:7-alpine
+    container_name: finsight-redis
+    restart: unless-stopped
+    command: ["redis-server", "--save", "60", "1", "--appendonly", "no"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - finsight_redis:/data
+
+volumes:
+  finsight_pg:
+  finsight_qdrant:
+  finsight_redis:

@@ -53,9 +53,55 @@ def _json_to_markdown(path: Path) -> str:
         # not valid JSON — index the raw text rather than failing the upload
         return raw
 
+    # Recognised schema: the project's OCR table export
+    #   {"tables": [{index, n_rows, n_cols, header: [...], rows: [[...], ...]}]}
+    tables = _extract_table_export(data)
+    if tables is not None:
+        return _render_table_export(path.stem, tables)
+
     lines: list[str] = [f"# {path.stem}", ""]
     _render_json(data, lines, depth=0)
     return "\n".join(lines).strip() + "\n"
+
+
+def _extract_table_export(data) -> list | None:
+    """Return a list of table objects if ``data`` is an OCR table export."""
+    tables = data.get("tables") if isinstance(data, dict) else data
+    if (
+        isinstance(tables, list)
+        and tables
+        and all(isinstance(t, dict) and "rows" in t for t in tables)
+    ):
+        return tables
+    return None
+
+
+def _render_table_export(stem: str, tables: list) -> str:
+    """Render each OCR-extracted table as a clean Markdown pipe table.
+
+    The structural metadata (index/n_rows/n_cols) is dropped so the chunk holds
+    only the table's text + numbers — exactly what retrieval and the LLM need.
+    """
+    lines: list[str] = [f"# {stem}", ""]
+    for i, table in enumerate(tables):
+        header = [_scalar(c) for c in (table.get("header") or [])]
+        rows = table.get("rows") or []
+        lines.append(f"## Table {table.get('index', i)}")
+        if header and any(h.strip() for h in header):
+            lines.append("| " + " | ".join(_cell(h) for h in header) + " |")
+            lines.append("| " + " | ".join("---" for _ in header) + " |")
+        width = len(header) or (len(rows[0]) if rows else 0)
+        for row in rows:
+            cells = [_cell(_scalar(c)) for c in row]
+            cells += [""] * (width - len(cells))  # pad ragged rows
+            lines.append("| " + " | ".join(cells) + " |")
+        lines.append("")
+    return "\n".join(lines).strip() + "\n"
+
+
+def _cell(value: str) -> str:
+    """Make a value safe to place inside a Markdown table cell."""
+    return value.replace("|", "\\|").replace("\n", " ").strip()
 
 
 def _render_json(node, lines: list[str], depth: int) -> None:
