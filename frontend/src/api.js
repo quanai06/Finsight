@@ -30,6 +30,7 @@ export const api = {
   deleteSession: (id) => request(`/sessions/${id}`, { method: "DELETE" }),
 
   listDocuments: (id) => request(`/sessions/${id}/documents`),
+  getDocument: (id, docId) => request(`/sessions/${id}/documents/${docId}`),
   uploadDocument: (id, file) => {
     const form = new FormData();
     form.append("file", file);

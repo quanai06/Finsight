@@ -34,14 +34,18 @@ def detect_kind(filename: str) -> str:
     raise ValueError(f"Unsupported file type: {ext or '(none)'}")
 
 
-def ingest_file(path: Path) -> tuple[str, str]:
-    """Dispatch on extension and return (markdown, source_label)."""
+def ingest_file(path: Path, enable_ocr: bool = False) -> tuple[str, str]:
+    """Dispatch on extension and return (markdown, source_label).
+
+    ``enable_ocr`` controls the scanned-PDF fallback: when False (default) a PDF
+    with no text layer is rejected instead of spinning up PaddleOCR-VL in-process.
+    """
     kind = detect_kind(path.name)
     if kind == "md":
         return path.read_text(encoding="utf-8", errors="replace"), "markdown"
     if kind == "json":
         return _json_to_markdown(path), "json"
-    return _pdf_to_markdown(path)
+    return _pdf_to_markdown(path, enable_ocr=enable_ocr)
 
 
 # --------------------------------------------------------------------- json
@@ -156,13 +160,23 @@ def _scalar(value) -> str:
 
 
 # ---------------------------------------------------------------------- pdf
-def _pdf_to_markdown(path: Path) -> tuple[str, str]:
+def _pdf_to_markdown(path: Path, enable_ocr: bool = False) -> tuple[str, str]:
     """Prefer the embedded text layer; fall back to OCR only if needed."""
     text = _extract_pdf_text(path)
     if text and len(text.strip()) > 40:
         return text, "pdf-text"
 
-    # No usable text layer -> scanned PDF. Try the project's OCR pipeline.
+    # No usable text layer -> scanned PDF. In-API OCR is gated: PaddleOCR-VL
+    # loads a multi-GB VLM into this process and isn't released, so it stays off
+    # unless explicitly enabled (FINSIGHT_ENABLE_API_OCR=true).
+    if not enable_ocr:
+        raise RuntimeError(
+            "This PDF has no extractable text layer (it looks scanned). In-API "
+            "OCR is disabled to protect memory. Run OCR offline first "
+            "(python -m src.ocr ...) and upload the Markdown/JSON export, or set "
+            "FINSIGHT_ENABLE_API_OCR=true to OCR inside the API."
+        )
+
     ocr_md = _try_ocr(path)
     if ocr_md is not None:
         return ocr_md, "ocr"

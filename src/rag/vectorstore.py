@@ -8,6 +8,7 @@ in one place. Embeddings are produced by :class:`~src.rag.embeddings.Embedder`.
 from __future__ import annotations
 
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass
 
 from qdrant_client import QdrantClient, models
@@ -64,30 +65,49 @@ class VectorStore:
             )
 
     # ------------------------------------------------------------- writes
-    def add(self, session_id: str, chunks: list[Chunk]) -> int:
-        if not chunks:
+    def add(
+        self,
+        session_id: str,
+        chunks: list[Chunk],
+        progress_cb: Callable[[int, int], None] | None = None,
+    ) -> int:
+        """Embed + upsert chunks in batches.
+
+        Vectors are produced one at a time and flushed every ``_BATCH`` points,
+        so memory stays bounded and ``progress_cb(done, total)`` can report how
+        far indexing has got (used to drive the per-document % in the UI).
+        """
+        total = len(chunks)
+        if total == 0:
             return 0
+        buffer: list[models.PointStruct] = []
+        done = 0
         texts = [c.text for c in chunks]
-        vectors = self.embedder.embed_passages(texts)
-        points = [
-            models.PointStruct(
-                id=str(uuid.uuid4()),
-                vector=vector,
-                payload={
-                    "session_id": session_id,
-                    "doc_id": c.doc_id,
-                    "doc_name": c.doc_name,
-                    "page": c.page,
-                    "heading": c.heading,
-                    "text": c.text,
-                    "ordinal": c.ordinal,
-                },
+        for c, vector in zip(chunks, self.embedder.embed_passages_iter(texts)):
+            buffer.append(
+                models.PointStruct(
+                    id=str(uuid.uuid4()),
+                    vector=vector,
+                    payload={
+                        "session_id": session_id,
+                        "doc_id": c.doc_id,
+                        "doc_name": c.doc_name,
+                        "page": c.page,
+                        "heading": c.heading,
+                        "text": c.text,
+                        "ordinal": c.ordinal,
+                    },
+                )
             )
-            for c, vector in zip(chunks, vectors)
-        ]
-        for i in range(0, len(points), _BATCH):
-            self.client.upsert(self.collection, points=points[i : i + _BATCH])
-        return len(points)
+            done += 1
+            if len(buffer) >= _BATCH:
+                self.client.upsert(self.collection, points=buffer)
+                buffer = []
+            if progress_cb is not None:
+                progress_cb(done, total)
+        if buffer:
+            self.client.upsert(self.collection, points=buffer)
+        return done
 
     def delete_doc(self, session_id: str, doc_id: str) -> None:
         self.client.delete(

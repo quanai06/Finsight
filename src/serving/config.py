@@ -72,6 +72,12 @@ class Settings:
         )
         self.use_reranker = _env("FINSIGHT_USE_RERANKER", "true").lower() == "true"
 
+        # Auto-run PaddleOCR-VL inside the API for scanned PDFs (no text layer).
+        # OFF by default: it loads a 3-5 GB VLM into the uvicorn process per
+        # request and is never released -> OOM risk on low-RAM machines. When
+        # off, scanned PDFs are rejected with a hint to OCR offline first.
+        self.enable_api_ocr = _env("FINSIGHT_ENABLE_API_OCR", "false").lower() == "true"
+
         # --- Retrieval ---
         self.retrieve_candidates = int(_env("FINSIGHT_RETRIEVE_CANDIDATES", "30"))
         self.top_k = int(_env("FINSIGHT_TOP_K", "6"))

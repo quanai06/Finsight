@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { api } from "../api.js";
 
 const ACCEPT = ".pdf,.md,.markdown,.json";
@@ -9,6 +9,15 @@ export default function DocumentPanel({ sessionId, documents, onChange }) {
   const [error, setError] = useState("");
   const [dragOver, setDragOver] = useState(false);
   const inputRef = useRef(null);
+
+  // Indexing now runs server-side in the background, so a freshly uploaded
+  // document starts as "processing". Poll until nothing is processing anymore.
+  const hasProcessing = documents.some((d) => d.status === "processing");
+  useEffect(() => {
+    if (!hasProcessing) return;
+    const timer = setInterval(() => { onChange(); }, 1500);
+    return () => clearInterval(timer);
+  }, [hasProcessing, onChange]);
 
   async function uploadFiles(files) {
     setError("");
@@ -87,10 +96,21 @@ export default function DocumentPanel({ sessionId, documents, onChange }) {
               {d.status === "ready" && (
                 <span className="subtle">{d.chunk_count} chunks · {d.source}</span>
               )}
+              {d.status === "processing" && (
+                <span className="subtle">{d.progress ?? 0}%</span>
+              )}
               <button className="icon-btn" title="Remove" onClick={() => handleDelete(d.id)}>
                 ✕
               </button>
             </div>
+            {d.status === "processing" && (
+              <div className="doc-progress" aria-label={`Indexing ${d.progress ?? 0}%`}>
+                <div
+                  className="doc-progress-bar"
+                  style={{ width: `${d.progress ?? 0}%` }}
+                />
+              </div>
+            )}
             {d.status === "failed" && d.error && (
               <p className="doc-error" title={d.error}>{d.error}</p>
             )}

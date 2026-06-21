@@ -34,6 +34,7 @@ class DocumentInfo(BaseModel):
     filename: str
     kind: Literal["pdf", "md", "json"]
     status: DocStatus
+    progress: int = 0          # indexing progress 0-100 (meaningful while "processing")
     chunk_count: int
     chars: int
     uploaded_at: str

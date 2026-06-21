@@ -64,20 +64,39 @@ Một ứng dụng end-to-end hoàn chỉnh đặt trên nền pipeline OCR sẵ
 `POST /api/sessions` → chèn một `SessionRow` vào Postgres. Thư mục trên đĩa và các
 point trong Qdrant được tạo lười (lazy) khi có tài liệu.
 
-### Upload tài liệu
-`POST /api/sessions/{id}/documents` (multipart). Khi upload, backend:
+### Upload tài liệu (xử lý nền — non-blocking)
+`POST /api/sessions/{id}/documents` (multipart). Upload được **tách làm hai** để
+request không bao giờ bị chặn bởi bước nặng (`src/serving/routes/documents.py`):
 
-1. Lưu file gốc vào `data/sessions/<id>/uploads/` (`src/serving/files.py`).
-2. **Ingest** thành Markdown chuẩn hoá (`src/serving/ingest.py`):
+**Pha 1 — đồng bộ, trả về ngay (201):**
+1. Kiểm tra session, phần mở rộng, giới hạn dung lượng.
+2. Lưu file gốc vào `data/sessions/<id>/uploads/` (`src/serving/files.py`).
+3. Tạo bản ghi tài liệu với trạng thái **`processing`** và **trả `DocumentInfo`
+   ngay lập tức** — client không phải chờ embedding.
+
+**Pha 2 — chạy nền (`_process_document`, trong threadpool của FastAPI):**
+4. **Ingest** thành Markdown chuẩn hoá (`src/serving/ingest.py`):
    - `.md` → dùng trực tiếp (đường nhanh).
    - `.json` → render thành Markdown dễ đọc (key lồng nhau + list phẳng thành bảng).
-   - `.pdf` → lấy lớp text nhúng bằng PyMuPDF; PDF scan fallback sang pipeline OCR
-     nếu có, không thì đánh dấu thất bại.
-3. **Chia chunk** Markdown theo cấu trúc (`src/rag/chunking.py`) — bám theo
+   - `.pdf` → lấy lớp text nhúng bằng PyMuPDF; PDF scan **chỉ** fallback sang OCR
+     khi bật `FINSIGHT_ENABLE_API_OCR` (mặc định tắt để tránh nạp VLM nặng vào API).
+5. **Chia chunk** Markdown theo cấu trúc (`src/rag/chunking.py`) — bám theo
    trang/heading, bảng được giữ nguyên và lặp lại dòng header cho từng nhóm.
-4. **Nhúng** các chunk bằng FastEmbed (ONNX) và **upsert** vào collection chung
-   của Qdrant, kèm payload `session_id` (`src/rag/vectorstore.py`).
-5. Ghi trạng thái tài liệu (`ready` / `failed`), số chunk và số ký tự vào Postgres.
+6. **Nhúng** các chunk bằng FastEmbed (ONNX) và **upsert** vào collection chung
+   của Qdrant, kèm payload `session_id` (`src/rag/vectorstore.py`). Đây là bước
+   ngốn CPU/RAM nhất; đặt ở nền nên upload trả về tức thì và API vẫn phản hồi.
+   Nhúng theo **lô nhỏ** (16) + upsert từng lô → RAM giữ thấp và báo được tiến độ.
+7. Ghi trạng thái cuối (`ready` / `failed`), số chunk và số ký tự vào Postgres.
+
+**Tiến độ theo %:** tài liệu có cột `progress` (0–100). Trong lúc nhúng,
+`vectorstore.add(progress_cb=…)` báo `done/total` sau mỗi vector; worker quy về
+thang **5→95%** (parse/chunk = 5%, nhúng xong = 95%, ghi `ready` = 100%) và ghi
+vào Postgres mỗi khi tăng ≥5% (tránh ghi DB quá dày).
+
+**Poll trạng thái:** client gọi `GET /api/sessions/{id}/documents/{doc_id}` để
+lấy `status` + `progress`. Frontend tự poll mỗi 1.5s khi còn tài liệu
+`processing` (`DocumentPanel.jsx`): badge + **thanh % cho từng file** tự cập nhật,
+không cần refresh tay.
 
 ### Đặt câu hỏi
 `POST /api/sessions/{id}/chat`:
@@ -208,8 +227,9 @@ frontend/
 | `GET` | `/api/sessions` | Liệt kê session |
 | `GET` | `/api/sessions/{id}` | Chi tiết session (+ tài liệu) |
 | `DELETE` | `/api/sessions/{id}` | Xoá session (Postgres + Qdrant + đĩa + Redis) |
-| `POST` | `/api/sessions/{id}/documents` | Upload tài liệu PDF/MD/JSON |
+| `POST` | `/api/sessions/{id}/documents` | Upload tài liệu PDF/MD/JSON (trả về ngay, status `processing`) |
 | `GET` | `/api/sessions/{id}/documents` | Liệt kê tài liệu |
+| `GET` | `/api/sessions/{id}/documents/{doc_id}` | Poll trạng thái một tài liệu (`processing`→`ready`/`failed`) |
 | `DELETE` | `/api/sessions/{id}/documents/{doc_id}` | Xoá một tài liệu |
 | `POST` | `/api/sessions/{id}/chat` | Đặt câu hỏi (RAG) |
 | `GET` | `/api/sessions/{id}/chat` | Lịch sử chat |
@@ -250,7 +270,10 @@ session đó trong Postgres và nhúng lại file vào Qdrant.
 - **Lọc theo tài liệu / theo năm** trong một session để tránh lẫn năm (payload
   Qdrant đã sẵn `doc_id`).
 - **Trả lời theo luồng (SSE)** cho cảm giác chat nhanh hơn.
-- **Ingest nền** cho PDF lớn để upload trả về ngay, UI poll trạng thái `ready`.
+- ✅ **Ingest nền** — đã làm: upload trả về ngay với status `processing`, embedding
+  chạy ở background task, UI poll `GET .../documents/{doc_id}` tới khi `ready`.
+  Bước tiếp có thể nâng lên hàng đợi thật (Celery/RQ/Arq) + giới hạn số job song
+  song để khống chế đỉnh CPU/RAM khi nhiều người upload cùng lúc.
 - **Embedding GPU** — đổi sang model lớn hơn khi có GPU; chỉ `src/rag/embeddings.py`
   đổi, API và frontend giữ nguyên.
 ```

@@ -74,6 +74,7 @@ class DocumentRow(Base):
     filename: Mapped[str] = mapped_column(String(512))
     kind: Mapped[str] = mapped_column(String(8))
     status: Mapped[str] = mapped_column(String(12), default="processing")
+    progress: Mapped[int] = mapped_column(Integer, default=0)  # 0-100, indexing %
     chunk_count: Mapped[int] = mapped_column(Integer, default=0)
     chars: Mapped[int] = mapped_column(Integer, default=0)
     source: Mapped[str] = mapped_column(String(16), default="")
@@ -111,6 +112,13 @@ class Database:
 
     def create_all(self) -> None:
         Base.metadata.create_all(self.engine)
+        # Idempotent add for databases created before `progress` existed
+        # (create_all never ALTERs existing tables).
+        with self.engine.begin() as conn:
+            conn.exec_driver_sql(
+                "ALTER TABLE documents "
+                "ADD COLUMN IF NOT EXISTS progress INTEGER NOT NULL DEFAULT 0"
+            )
 
     # ------------------------------------------------------------- sessions
     def create_session(self, name: str, description: str = "") -> dict:
@@ -216,6 +224,7 @@ class Database:
             "filename": row.filename,
             "kind": row.kind,
             "status": row.status,
+            "progress": row.progress,
             "chunk_count": row.chunk_count,
             "chars": row.chars,
             "source": row.source,

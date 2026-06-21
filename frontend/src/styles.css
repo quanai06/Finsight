@@ -228,6 +228,20 @@ input[type="text"]:focus, textarea:focus {
 .doc-item-meta .icon-btn { margin-left: 0; }
 .doc-error { color: var(--danger); font-size: 0.78rem; margin-top: 6px; }
 
+.doc-progress {
+  margin-top: 8px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+}
+.doc-progress-bar {
+  height: 100%;
+  background: var(--warning);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
 .kind-badge {
   font-size: 0.66rem;
   font-weight: 700;
