@@ -3,6 +3,14 @@ paddlepaddle==3.3.1          # CPU build; use paddlepaddle-gpu on a CUDA machine
 paddleocr==3.7.0
 paddlex[ocr]==3.7.1          # required extras for the PaddleOCR-VL pipeline
 opencv-contrib-python==4.10.0.84
-pymupdf>=1.27                # PDF -> image rendering (no system poppler needed)
+pymupdf>=1.27                # PDF -> image rendering + PDF text-layer extraction
 pyyaml>=6.0                  # configs/ocr.yaml loading
 pytest>=8.0                  # tests/ (OCR evaluation suite)
+
+# Backend API + RAG (src/serving, src/rag) — CPU-only, no GPU required
+fastapi>=0.115              # REST API
+uvicorn[standard]>=0.30     # ASGI server
+python-multipart>=0.0.9     # multipart/form-data file uploads
+httpx>=0.27                 # Groq (LLM) API calls
+scikit-learn>=1.4           # TF-IDF retrieval index
+numpy>=1.26                 # vector math for retrieval

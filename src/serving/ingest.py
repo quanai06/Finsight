@@ -1,0 +1,156 @@
+"""Turn an uploaded file into normalized Markdown for indexing.
+
+Three accepted kinds, mirroring the project's OCR->RAG flow but staying usable
+without a GPU:
+
+  * ``.md``   — used as-is (the fast path you want while there is no GPU).
+  * ``.json`` — rendered to readable Markdown (works for OCR-export JSON or any
+                nested structure).
+  * ``.pdf``  — extract the embedded text layer with PyMuPDF (instant, CPU). If
+                the PDF is scanned (no text layer), fall back to the project's
+                OCR pipeline; if OCR isn't available, the document is flagged so
+                the user knows it needs a GPU/OCR run.
+
+Returns ``(markdown, source_label)`` where ``source_label`` records which path
+produced the text, surfaced in the UI for transparency.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+SUPPORTED_EXTENSIONS = {".pdf", ".md", ".markdown", ".json"}
+
+
+def detect_kind(filename: str) -> str:
+    ext = Path(filename).suffix.lower()
+    if ext == ".pdf":
+        return "pdf"
+    if ext in (".md", ".markdown"):
+        return "md"
+    if ext == ".json":
+        return "json"
+    raise ValueError(f"Unsupported file type: {ext or '(none)'}")
+
+
+def ingest_file(path: Path) -> tuple[str, str]:
+    """Dispatch on extension and return (markdown, source_label)."""
+    kind = detect_kind(path.name)
+    if kind == "md":
+        return path.read_text(encoding="utf-8", errors="replace"), "markdown"
+    if kind == "json":
+        return _json_to_markdown(path), "json"
+    return _pdf_to_markdown(path)
+
+
+# --------------------------------------------------------------------- json
+def _json_to_markdown(path: Path) -> str:
+    raw = path.read_text(encoding="utf-8", errors="replace")
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        # not valid JSON — index the raw text rather than failing the upload
+        return raw
+
+    lines: list[str] = [f"# {path.stem}", ""]
+    _render_json(data, lines, depth=0)
+    return "\n".join(lines).strip() + "\n"
+
+
+def _render_json(node, lines: list[str], depth: int) -> None:
+    indent = "  " * depth
+    if isinstance(node, dict):
+        for key, value in node.items():
+            if isinstance(value, (dict, list)):
+                lines.append(f"{indent}- **{key}**:")
+                _render_json(value, lines, depth + 1)
+            else:
+                lines.append(f"{indent}- **{key}**: {_scalar(value)}")
+    elif isinstance(node, list):
+        # a list of flat dicts renders nicely as a Markdown table
+        if node and all(isinstance(x, dict) for x in node) and _flat_dicts(node):
+            _render_table(node, lines, indent)
+        else:
+            for item in node:
+                if isinstance(item, (dict, list)):
+                    _render_json(item, lines, depth)
+                else:
+                    lines.append(f"{indent}- {_scalar(item)}")
+    else:
+        lines.append(f"{indent}{_scalar(node)}")
+
+
+def _flat_dicts(rows: list[dict]) -> bool:
+    return all(
+        all(not isinstance(v, (dict, list)) for v in row.values()) for row in rows
+    )
+
+
+def _render_table(rows: list[dict], lines: list[str], indent: str) -> None:
+    columns: list[str] = []
+    for row in rows:
+        for key in row:
+            if key not in columns:
+                columns.append(key)
+    lines.append(indent + "| " + " | ".join(columns) + " |")
+    lines.append(indent + "| " + " | ".join("---" for _ in columns) + " |")
+    for row in rows:
+        cells = [_scalar(row.get(c, "")) for c in columns]
+        lines.append(indent + "| " + " | ".join(cells) + " |")
+    lines.append("")
+
+
+def _scalar(value) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    return str(value).replace("\n", " ").strip()
+
+
+# ---------------------------------------------------------------------- pdf
+def _pdf_to_markdown(path: Path) -> tuple[str, str]:
+    """Prefer the embedded text layer; fall back to OCR only if needed."""
+    text = _extract_pdf_text(path)
+    if text and len(text.strip()) > 40:
+        return text, "pdf-text"
+
+    # No usable text layer -> scanned PDF. Try the project's OCR pipeline.
+    ocr_md = _try_ocr(path)
+    if ocr_md is not None:
+        return ocr_md, "ocr"
+
+    raise RuntimeError(
+        "This PDF has no extractable text layer (it looks scanned) and OCR is "
+        "not available on this machine. Upload a Markdown/JSON export instead, "
+        "or run OCR on a GPU machine first."
+    )
+
+
+def _extract_pdf_text(path: Path) -> str:
+    try:
+        import fitz  # PyMuPDF
+    except ImportError:
+        return ""
+    parts: list[str] = []
+    with fitz.open(path) as doc:
+        for i, page in enumerate(doc):
+            body = page.get_text("text").strip()
+            if body:
+                parts.append(f"<!-- ===== page {i + 1} ===== -->")
+                parts.append(body)
+    return "\n\n".join(parts)
+
+
+def _try_ocr(path: Path) -> str | None:
+    try:
+        from src.ocr import OCRConfig, OCRPipeline
+    except Exception:  # noqa: BLE001 - paddle/ocr extras may be absent
+        return None
+    try:
+        config = OCRConfig(input_path=path)
+        doc = OCRPipeline(config).run()
+        return doc.to_markdown()
+    except Exception:  # noqa: BLE001 - OCR may need a GPU / model weights
+        return None
