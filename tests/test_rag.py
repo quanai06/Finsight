@@ -124,3 +124,43 @@ giá thấp hơn giữa giá gốc và giá trị thuần có thể thực hiệ
     # the short note prose is expanded to its whole-section parent (small-to-big)
     assert note.parent_id == note.section_id
     assert "giá trị thuần" in note.parent_text
+
+
+# --------------------------------------------------------------- cancellation -
+def test_index_jobs_cancel_lifecycle():
+    from src.serving.routes.documents import _IndexJobs
+    jobs = _IndexJobs()
+    assert jobs.cancel("d1") is False          # not running -> nothing to cancel
+    jobs.start("d1")
+    assert jobs.is_cancelled("d1") is False
+    assert jobs.cancel("d1") is True            # running -> cancellable
+    assert jobs.is_cancelled("d1") is True
+    jobs.finish("d1")
+    assert jobs.is_cancelled("d1") is False      # cleared after finish
+
+
+class _FakeEmbedder:
+    """Stand-in so vectorstore.add can be exercised without ONNX/Qdrant."""
+    has_sparse = False
+
+    def embed_passages_iter(self, texts):
+        for _ in texts:
+            yield [0.0, 0.0]
+
+
+def test_vectorstore_add_stops_early_when_cancelled():
+    from src.rag import vectorstore as vs_mod
+    from src.rag.chunking import Chunk
+
+    vs = vs_mod.VectorStore.__new__(vs_mod.VectorStore)  # skip __init__/Qdrant
+    vs.embedder = _FakeEmbedder()
+    vs.hybrid = False
+    upserts = []
+    vs.client = type("C", (), {"upsert": lambda self, col, points: upserts.append(len(points))})()
+    vs.collection = "c"
+
+    chunks = [Chunk(text=f"t{i}", doc_id="d", doc_name="n") for i in range(200)]
+    # cancel immediately -> should index 0 and never upsert
+    done = vs.add("s", chunks, should_cancel=lambda: True)
+    assert done == 0
+    assert upserts == []

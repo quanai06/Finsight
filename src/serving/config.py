@@ -71,6 +71,10 @@ class Settings:
         # layer that pins exact figures/codes/years that dense vectors blur.
         self.use_hybrid = _env("FINSIGHT_USE_HYBRID", "true").lower() == "true"
         self.sparse_model = _env("FINSIGHT_SPARSE_MODEL", "Qdrant/bm25")
+        # ONNX intra-op threads (0 = let onnxruntime decide — measured fastest;
+        # forcing the logical-core count was slower). Batch size for embedding.
+        self.embed_threads = int(_env("FINSIGHT_EMBED_THREADS", "0"))
+        self.embed_batch = int(_env("FINSIGHT_EMBED_BATCH", "16"))
         self.rerank_model = _env(
             "FINSIGHT_RERANK_MODEL", "jinaai/jina-reranker-v2-base-multilingual"
         )

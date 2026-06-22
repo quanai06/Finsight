@@ -118,12 +118,18 @@ class VectorStore:
         session_id: str,
         chunks: list[Chunk],
         progress_cb: Callable[[int, int], None] | None = None,
+        should_cancel: Callable[[], bool] | None = None,
     ) -> int:
         """Embed (dense + sparse) and upsert chunks in batches.
 
         Vectors are produced one at a time and flushed every ``_BATCH`` points,
         so memory stays bounded and ``progress_cb(done, total)`` can report how
         far indexing has got (used to drive the per-document % in the UI).
+
+        ``should_cancel`` is polled per chunk; when it returns True the loop stops
+        early and returns the count indexed so far (the caller is responsible for
+        removing the partial vectors). This is what makes a cancelled upload stop
+        burning CPU instead of embedding to the end.
         """
         total = len(chunks)
         if total == 0:
@@ -138,6 +144,8 @@ class VectorStore:
         buffer: list[models.PointStruct] = []
         done = 0
         for c, dense in zip(chunks, dense_iter):
+            if should_cancel is not None and should_cancel():
+                return done  # stop early; caller deletes the partial vectors
             vector: dict = {_DENSE: dense}
             if self.hybrid:
                 sp = next(sparse_iter)

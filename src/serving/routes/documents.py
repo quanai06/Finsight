@@ -13,9 +13,54 @@ from __future__ import annotations
 
 import logging
 import re
+import threading
+import time
 from pathlib import Path
 
 _YEAR_RE = re.compile(r"\b(19|20)\d{2}\b")
+
+
+class _IndexJobs:
+    """Tracks in-flight document indexing so a cancelled upload actually stops.
+
+    Single-process (matches the dev single-worker setup). ``DELETE`` flags a job;
+    the background embedding loop polls ``is_cancelled`` and bails out instead of
+    grinding through every chunk on the CPU.
+    """
+
+    def __init__(self) -> None:
+        self._active: set[str] = set()
+        self._cancelled: set[str] = set()
+        self._lock = threading.Lock()
+
+    def start(self, doc_id: str) -> None:
+        with self._lock:
+            self._cancelled.discard(doc_id)
+            self._active.add(doc_id)
+
+    def finish(self, doc_id: str) -> None:
+        with self._lock:
+            self._active.discard(doc_id)
+            self._cancelled.discard(doc_id)
+
+    def cancel(self, doc_id: str) -> bool:
+        """Flag a running job for cancellation; True if it was actually running."""
+        with self._lock:
+            if doc_id in self._active:
+                self._cancelled.add(doc_id)
+                return True
+            return False
+
+    def is_cancelled(self, doc_id: str) -> bool:
+        with self._lock:
+            return doc_id in self._cancelled
+
+
+_jobs = _IndexJobs()
+
+
+class _Cancelled(Exception):
+    """Raised inside the indexing task when the document was cancelled."""
 
 
 def _doc_year(filename: str, markdown: str) -> int | None:
@@ -130,9 +175,13 @@ def _process_document(
     it here keeps the upload response instant and the API responsive. The result
     is written back to the document row as ``ready`` (with counts) or ``failed``.
     """
+    _jobs.start(doc_id)
+    t0 = time.perf_counter()
     try:
         markdown, source = ingest_file(upload_path, enable_ocr=settings.enable_api_ocr)
         files.save_processed(sid, doc_id, markdown)
+        t_ingest = time.perf_counter()
+
         year = _doc_year(filename, markdown)
         chunks = chunk_markdown(
             markdown,
@@ -143,6 +192,9 @@ def _process_document(
             doc_context=_doc_context(filename, year),
             year=year,
         )
+        t_chunk = time.perf_counter()
+        if _jobs.is_cancelled(doc_id):
+            raise _Cancelled
 
         # Map embedding progress onto 5..95% (parse/chunk = first 5%, the final
         # write-back to "ready" is 100%). Throttle DB writes to every +5% so a
@@ -157,12 +209,35 @@ def _process_document(
                 db.update_document(doc_id, progress=min(pct, 99))
 
         db.update_document(doc_id, chars=len(markdown), source=source, progress=5)
-        n = vectors.add(sid, chunks, progress_cb=on_progress)
+        n = vectors.add(
+            sid,
+            chunks,
+            progress_cb=on_progress,
+            should_cancel=lambda: _jobs.is_cancelled(doc_id),
+        )
+        if _jobs.is_cancelled(doc_id):
+            raise _Cancelled
+        t_embed = time.perf_counter()
+
         db.update_document(doc_id, status="ready", chunk_count=n, progress=100)
-        logger.info("Document %s indexed: %d chunks (%s)", doc_id, n, source)
+        logger.info(
+            "Document %s indexed: %d chunks (%s) | timing: ingest=%.1fs chunk=%.2fs "
+            "embed=%.1fs total=%.1fs",
+            doc_id, n, source,
+            t_ingest - t0, t_chunk - t_ingest, t_embed - t_chunk, t_embed - t0,
+        )
+    except _Cancelled:
+        # Upload was cancelled mid-flight: stop and remove any partial vectors.
+        logger.info("Document %s cancelled during indexing; cleaning up", doc_id)
+        try:
+            vectors.delete_doc(sid, doc_id)
+        except Exception:  # noqa: BLE001 - row/vectors may already be gone
+            pass
     except Exception as exc:  # noqa: BLE001 - report failure to the UI, keep the file
         logger.warning("Document %s failed to index: %s", doc_id, exc)
         db.update_document(doc_id, status="failed", error=str(exc))
+    finally:
+        _jobs.finish(doc_id)
 
 
 @router.delete("/{doc_id}", status_code=204)
@@ -175,6 +250,9 @@ def delete_document(
 ):
     if not db.session_exists(sid):
         raise HTTPException(status_code=404, detail="Session not found")
+    # Signal any in-flight indexing to stop *before* removing the row, so the
+    # background task quits early and self-cleans instead of running to the end.
+    _jobs.cancel(doc_id)
     if db.remove_document(sid, doc_id) is None:
         raise HTTPException(status_code=404, detail="Document not found")
     vectors.delete_doc(sid, doc_id)

@@ -35,6 +35,8 @@ def get_embedder() -> Embedder:
         s.embed_model,
         sparse_model_name=s.sparse_model,
         enable_sparse=s.use_hybrid,
+        threads=s.embed_threads or None,
+        batch_size=s.embed_batch,
     )
 
 

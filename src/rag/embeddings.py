@@ -35,18 +35,24 @@ class Embedder:
         *,
         sparse_model_name: str = "Qdrant/bm25",
         enable_sparse: bool = True,
+        threads: int | None = None,
+        batch_size: int = 16,
     ) -> None:
         from fastembed import TextEmbedding
 
         self.model_name = model_name
         self.sparse_model_name = sparse_model_name if enable_sparse else None
-        self._model = TextEmbedding(model_name=model_name)
+        self.batch_size = batch_size
+        # threads=None lets onnxruntime pick (measured fastest here; forcing the
+        # logical-core count oversubscribed and was slower). Exposed for tuning.
+        kw = {"threads": threads} if threads else {}
+        self._model = TextEmbedding(model_name=model_name, **kw)
         self._is_e5 = "e5" in model_name.lower()
         self._sparse = None
         if enable_sparse:
             from fastembed import SparseTextEmbedding
 
-            self._sparse = SparseTextEmbedding(model_name=sparse_model_name)
+            self._sparse = SparseTextEmbedding(model_name=sparse_model_name, **kw)
 
     @property
     def has_sparse(self) -> bool:
@@ -64,9 +70,9 @@ class Embedder:
         if not texts:
             return
         prepared = self._prefix(texts, "passage")
-        # Small batch -> FastEmbed yields more often, so progress updates are
-        # granular (not one big jump) and peak RAM stays low.
-        for vec in self._model.embed(prepared, batch_size=16):
+        # Smaller batch -> FastEmbed yields more often (granular progress, lower
+        # peak RAM); larger -> marginally more throughput. Configurable.
+        for vec in self._model.embed(prepared, batch_size=self.batch_size):
             yield vec.tolist()
 
     def embed_passages(self, texts: list[str]) -> list[list[float]]:
@@ -81,7 +87,7 @@ class Embedder:
         """Yield one BM25 sparse vector per passage, aligned with ``texts``."""
         if not texts or self._sparse is None:
             return
-        for emb in self._sparse.embed(texts, batch_size=16):
+        for emb in self._sparse.embed(texts, batch_size=self.batch_size):
             yield SparseVec(emb.indices.tolist(), emb.values.tolist())
 
     def embed_sparse_query(self, text: str) -> SparseVec | None:
