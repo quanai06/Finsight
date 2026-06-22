@@ -107,7 +107,13 @@ class Database:
     """Thin repository over a SQLAlchemy engine."""
 
     def __init__(self, url: str) -> None:
-        self.engine = create_engine(url, pool_pre_ping=True, future=True)
+        # Larger pool than the default (5 + 10): concurrent uploads each emit
+        # throttled progress writes while chat + status polling also need
+        # connections, so the default pool can be exhausted under load.
+        kw: dict = {"pool_pre_ping": True, "future": True}
+        if url.startswith("postgresql"):
+            kw |= {"pool_size": 20, "max_overflow": 20, "pool_recycle": 1800}
+        self.engine = create_engine(url, **kw)
         self._Session = sessionmaker(self.engine, expire_on_commit=False)
 
     def create_all(self) -> None:

@@ -214,6 +214,26 @@ def is_abstention(answer: str) -> bool:
 
 
 # --------------------------------------------------------------------------- #
+#  Context recall, number-grounded (deterministic RAGAS context-recall proxy)
+# --------------------------------------------------------------------------- #
+
+
+def context_number_recall(context: str, gold_numbers: list[str]) -> float:
+    """Fraction of the gold figures that actually appear in the retrieved context.
+
+    A deterministic stand-in for RAGAS *context recall*: if the number needed for
+    the answer isn't in the retrieved context, retrieval failed regardless of what
+    the LLM later says. Returns NaN when the item has no gold numbers (text Qs).
+    """
+    gold = {c for g in gold_numbers if (c := _canon_number(g)) is not None}
+    if not gold:
+        return float("nan")
+    found = extract_numbers(context)
+    return len(gold & found) / len(gold)
+
+
+
+# --------------------------------------------------------------------------- #
 #  LLM-as-judge (RAGAS / TruLens style) — optional, needs a chat client
 # --------------------------------------------------------------------------- #
 
@@ -223,12 +243,28 @@ _JUDGE_SYSTEM = (
 )
 
 
-def _ask_judge(chat, prompt: str) -> dict:
-    """Call the chat client and parse the first JSON object from its reply."""
-    reply = chat([
-        {"role": "system", "content": _JUDGE_SYSTEM},
-        {"role": "user", "content": prompt},
-    ])
+def _ask_judge(chat, prompt: str, *, retries: int = 4) -> dict:
+    """Call the chat client and parse the first JSON object from its reply.
+
+    Retries on transient rate-limit errors (Groq free tier is ~12k TPM), honouring
+    the "try again in Xs" hint when present so a long RAGAS run actually completes.
+    """
+    import time
+
+    for attempt in range(retries + 1):
+        try:
+            reply = chat([
+                {"role": "system", "content": _JUDGE_SYSTEM},
+                {"role": "user", "content": prompt},
+            ])
+            break
+        except Exception as exc:  # noqa: BLE001 - retry only rate limits
+            msg = str(exc)
+            if ("429" in msg or "rate limit" in msg.lower()) and attempt < retries:
+                m = re.search(r"try again in ([\d.]+)s", msg)
+                time.sleep(min(float(m.group(1)) + 0.5 if m else 2.0 * (attempt + 1), 30.0))
+                continue
+            raise
     m = re.search(r"\{.*\}", reply, flags=re.DOTALL)
     if not m:
         return {}
@@ -264,6 +300,35 @@ def judge_answer_relevancy(chat, question: str, answer: str) -> float:
     r = _ask_judge(chat, prompt)
     s = r.get("score")
     return float("nan") if s is None else max(0.0, min(1.0, float(s)))
+
+
+def judge_context_precision(chat, question: str, context: str) -> float:
+    """RAGAS Context Precision: fraction of the retrieved context that is relevant
+    to answering the question (signal-to-noise of retrieval)."""
+    prompt = (
+        "Given a QUESTION and the retrieved CONTEXT, estimate from 0.0 to 1.0 how "
+        "much of the CONTEXT is relevant to answering the QUESTION (1.0 = all "
+        "relevant, 0.0 = mostly irrelevant). "
+        'Reply as JSON: {"score": <float 0..1>}.\n\n'
+        f"QUESTION:\n{question}\n\nCONTEXT:\n{context}"
+    )
+    r = _ask_judge(chat, prompt)
+    s = r.get("score")
+    return float("nan") if s is None else max(0.0, min(1.0, float(s)))
+
+
+def judge_context_recall(chat, reference: str, context: str) -> float:
+    """RAGAS Context Recall: fraction of the reference answer's claims that are
+    supported by the retrieved context (did retrieval bring back what's needed)."""
+    prompt = (
+        "Given a CONTEXT and a REFERENCE answer, decide what fraction of the claims "
+        "in the REFERENCE are supported by the CONTEXT. Numbers must match. "
+        'Reply as JSON: {"supported": <int>, "total": <int>}.\n\n'
+        f"CONTEXT:\n{context}\n\nREFERENCE:\n{reference}"
+    )
+    r = _ask_judge(chat, prompt)
+    total = r.get("total") or 0
+    return float("nan") if not total else max(0.0, min(1.0, r.get("supported", 0) / total))
 
 
 def judge_answer_correctness(chat, question: str, answer: str, reference: str) -> float:

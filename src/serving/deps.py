@@ -72,4 +72,5 @@ def get_pipeline() -> RAGPipeline:
         mmr_lambda=s.mmr_lambda,
         score_threshold=s.score_threshold,
         use_routing=s.use_routing,
+        use_graph=s.use_graph,
     )

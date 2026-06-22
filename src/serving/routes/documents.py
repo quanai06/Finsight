@@ -12,12 +12,32 @@ the client gets an immediate 201 and the API stays responsive while indexing.
 from __future__ import annotations
 
 import logging
+import os
 import re
 import threading
 import time
 from pathlib import Path
 
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, UploadFile
+
+from src.rag import VectorStore, chunk_markdown
+
+from ..config import Settings, get_settings
+from ..db import Database
+from ..deps import get_db, get_files, get_vectorstore
+from ..files import FileStore
+from ..ingest import SUPPORTED_EXTENSIONS, detect_kind, ingest_file
+from ..schemas import DocumentInfo
+
 _YEAR_RE = re.compile(r"\b(19|20)\d{2}\b")
+
+# Global cap on *concurrent* embedding jobs. Each embed job drives ONNX across all
+# CPU cores; with N uploads at once (e.g. 10 files × 100 pages) N all-core jobs
+# oversubscribe the CPU and multiply peak RAM, so total wall-clock gets *worse*.
+# Serializing to 1–2 jobs lets each run at full speed and bounds memory. Tune with
+# FINSIGHT_EMBED_CONCURRENCY. The rest of the upload (parse/chunk/DB) stays parallel.
+_EMBED_CONCURRENCY = max(1, int(os.environ.get("FINSIGHT_EMBED_CONCURRENCY", "1")))
+_embed_gate = threading.BoundedSemaphore(_EMBED_CONCURRENCY)
 
 
 class _IndexJobs:
@@ -76,17 +96,6 @@ def _doc_context(filename: str, year: int | None) -> str:
     if year is not None:
         ctx += f" · Năm: {year}"
     return ctx
-
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, UploadFile
-
-from src.rag import VectorStore, chunk_markdown
-
-from ..config import Settings, get_settings
-from ..db import Database
-from ..deps import get_db, get_files, get_vectorstore
-from ..files import FileStore
-from ..ingest import SUPPORTED_EXTENSIONS, detect_kind, ingest_file
-from ..schemas import DocumentInfo
 
 logger = logging.getLogger(__name__)
 
@@ -209,12 +218,18 @@ def _process_document(
                 db.update_document(doc_id, progress=min(pct, 99))
 
         db.update_document(doc_id, chars=len(markdown), source=source, progress=5)
-        n = vectors.add(
-            sid,
-            chunks,
-            progress_cb=on_progress,
-            should_cancel=lambda: _jobs.is_cancelled(doc_id),
-        )
+        # Gate the CPU-heavy embedding so concurrent uploads don't oversubscribe
+        # cores/RAM. Parse+chunk above already ran in parallel; only the embed is
+        # serialized. A cancelled job releases the slot immediately.
+        with _embed_gate:
+            if _jobs.is_cancelled(doc_id):
+                raise _Cancelled
+            n = vectors.add(
+                sid,
+                chunks,
+                progress_cb=on_progress,
+                should_cancel=lambda: _jobs.is_cancelled(doc_id),
+            )
         if _jobs.is_cancelled(doc_id):
             raise _Cancelled
         t_embed = time.perf_counter()

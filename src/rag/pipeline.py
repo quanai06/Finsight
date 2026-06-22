@@ -75,6 +75,39 @@ def _cosine(a: list[float], b: list[float]) -> float:
     return dot / (na * nb)
 
 
+def _mmr_numpy(hits: list[Hit], k: int, lam: float):
+    """Vectorized MMR: one normalized matrix + matmul instead of O(n²) Python
+    cosine loops. Returns the selected hit list, or None if numpy/vectors are
+    unavailable so the caller can fall back to the pure-Python path."""
+    try:
+        import numpy as np
+    except Exception:  # noqa: BLE001 - numpy is a declared dep; guard anyway
+        return None
+    if any(not h.vector for h in hits):
+        return None
+    V = np.asarray([h.vector for h in hits], dtype=np.float32)
+    norms = np.linalg.norm(V, axis=1, keepdims=True)
+    norms[norms == 0] = 1.0
+    Vn = V / norms
+    sim = Vn @ Vn.T  # pairwise cosine, all at once
+    scores = np.asarray([h.score for h in hits], dtype=np.float32)
+    lo, hi = float(scores.min()), float(scores.max())
+    rel = (scores - lo) / ((hi - lo) or 1.0)
+
+    selected: list[int] = []
+    remaining = list(range(len(hits)))
+    while remaining and len(selected) < k:
+        if not selected:
+            best = max(remaining, key=lambda i: rel[i])
+        else:
+            red = sim[remaining][:, selected].max(axis=1)
+            vals = lam * rel[remaining] - (1 - lam) * red
+            best = remaining[int(vals.argmax())]
+        selected.append(best)
+        remaining.remove(best)
+    return [hits[i] for i in selected]
+
+
 def _collapse_parents(hits: list[Hit]) -> list[Hit]:
     """Merge a table's row-group hits into one, carrying the full table text.
 
@@ -109,6 +142,9 @@ def _mmr(hits: list[Hit], k: int, lam: float) -> list[Hit]:
     """Maximal Marginal Relevance: relevant (retrieval score) but diverse (dense)."""
     if len(hits) <= k:
         return hits
+    fast = _mmr_numpy(hits, k, lam)
+    if fast is not None:
+        return fast
     scores = [h.score for h in hits]
     lo, hi = min(scores), max(scores)
     span = (hi - lo) or 1.0
@@ -143,6 +179,8 @@ class RAGPipeline:
         mmr_lambda: float = 0.6,
         score_threshold: float = 0.0,
         use_routing: bool = True,
+        use_graph: bool = False,
+        known_years: list[int] | None = None,
     ) -> None:
         self.llm = llm
         self.vectorstore = vectorstore
@@ -152,12 +190,31 @@ class RAGPipeline:
         self.mmr_lambda = mmr_lambda
         self.score_threshold = score_threshold
         self.use_routing = use_routing
+        # Graph-RAG cross-period fan-out: when a question spans several years,
+        # search each year and merge so the context covers every period.
+        self.use_graph = use_graph
+        self.known_years = known_years or []
 
     def _routed_search(self, session_id: str, question: str) -> list[Hit]:
         """Hybrid search, soft-filtered to the statement/note/year the question
         targets. Degrades gracefully: drop the year filter first, then all
         filters, so routing never blocks an answer that exists off-route."""
         n = self.candidates
+
+        # Graph-RAG: multi-period questions fan out across years (see
+        # src/rag/graph_retrieval.py) so one year can't crowd out the others.
+        if self.use_graph:
+            from .graph_retrieval import cross_period_search, detect_periods
+
+            periods = detect_periods(question, self.known_years)
+            if periods:
+                r = route_query(question) if self.use_routing else None
+                return cross_period_search(
+                    self.vectorstore, session_id, question, periods, total_limit=n,
+                    statement_type=(r.statement_type if r else ""),
+                    note_no=(r.note_no if r else None),
+                )
+
         if not self.use_routing:
             return self.vectorstore.search(session_id, question, limit=n)
         r = route_query(question)
@@ -176,6 +233,13 @@ class RAGPipeline:
             hits = self.vectorstore.search(session_id, question, limit=n)
         return hits
 
+    def _periods(self, question: str) -> list[int]:
+        if not self.use_graph:
+            return []
+        from .graph_retrieval import detect_periods
+
+        return detect_periods(question, self.known_years)
+
     def retrieve(self, session_id: str, question: str) -> list[RetrievedChunk]:
         hits = self._routed_search(session_id, question)
         if not hits:
@@ -189,8 +253,17 @@ class RAGPipeline:
                 return []
 
         hits = _collapse_parents(hits)
+        periods = self._periods(question)
+        multi = len(periods) > 1
 
-        if self.reranker is not None:
+        if multi:
+            # Cross-period question: the same line item in each year is exactly what
+            # we want, but MMR would penalise those as near-duplicates and starve
+            # the later years. Keep the year-balanced fan-out order instead, and
+            # widen top_k to ~2 chunks per period so every year survives.
+            k = min(max(self.top_k, 2 * len(periods)), self.candidates)
+            ranked = hits[:k]
+        elif self.reranker is not None:
             scores = self.reranker.rerank(question, [h.text for h in hits])
             ranked = [h for h, _ in sorted(zip(hits, scores), key=lambda x: x[1], reverse=True)]
             ranked = ranked[: self.top_k]

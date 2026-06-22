@@ -47,8 +47,8 @@ if str(_REPO_ROOT) not in sys.path:
 from benchmark.rag import metrics as M  # noqa: E402
 
 _HERE = Path(__file__).resolve().parent
-_DEFAULT_DATASET = _REPO_ROOT / "data" / "rag" / "finsight_finqa_eval_v1.jsonl"
-_DEFAULT_CORPUS = _REPO_ROOT / "data" / "rag" / "corpus" / "vingroup_2021_bctc_hop_nhat.md"
+_DEFAULT_DATASET = _REPO_ROOT / "data" / "rag" / "finsight_finqa_eval_v2.jsonl"
+_DEFAULT_CORPUS = _REPO_ROOT / "data" / "rag" / "corpus"  # file or directory
 _DEFAULT_OUTDIR = _HERE / "results"
 _EVAL_SESSION = "benchmark-rag-eval"
 _K_VALUES = (1, 3, 5, 8)
@@ -65,7 +65,8 @@ class Item:
     question: str
     ground_truth: str
     answer_type: str
-    relevant_pages: set[int]
+    relevant_pages: set[int]      # v1 page-level labels (may be empty)
+    relevant_years: set[int]      # v2 period labels (may be empty)
     gold_numbers: list[str]
     raw: dict = field(default_factory=dict)
 
@@ -84,6 +85,7 @@ def load_dataset(path: Path, limit: int | None = None) -> list[Item]:
                 ground_truth=r["ground_truth"],
                 answer_type=r["answer_type"],
                 relevant_pages=set(r.get("relevant_pages") or []),
+                relevant_years=set(r.get("relevant_years") or []),
                 gold_numbers=r.get("gold_numbers") or [],
                 raw=r,
             )
@@ -103,7 +105,7 @@ def _doc_year(filename: str, markdown: str) -> int | None:
     return int(m.group(0)) if m else None
 
 
-def build_pipeline(retrieval_only: bool):
+def build_pipeline(retrieval_only: bool, known_years: list[int] | None = None):
     """Construct Embedder + VectorStore (+ optional Groq) exactly like serving."""
     from src.rag import Embedder, RAGPipeline, VectorStore
     from src.serving.config import get_settings
@@ -135,6 +137,8 @@ def build_pipeline(retrieval_only: bool):
         mmr_lambda=s.mmr_lambda,
         score_threshold=s.score_threshold,
         use_routing=s.use_routing,
+        use_graph=s.use_graph,
+        known_years=known_years or [],
     )
     return pipeline, store, s
 
@@ -146,26 +150,41 @@ class _NullLLM:
         raise RuntimeError("generation requested in retrieval-only mode")
 
 
-def index_corpus(store, settings, corpus: Path, *, reset: bool) -> int:
+def _corpus_files(corpus: Path) -> list[Path]:
+    if corpus.is_dir():
+        return sorted(corpus.glob("*.md"))
+    return [corpus]
+
+
+def index_corpus(store, settings, corpus: Path, *, reset: bool) -> tuple[int, list[int]]:
+    """Index a corpus file or every .md in a corpus directory (one doc each).
+
+    Returns (chunks_indexed, years_present) — the year list drives the Graph-RAG
+    fan-out's "all years" expansion.
+    """
     from src.rag import chunk_markdown
 
     if reset:
         store.delete_session(_EVAL_SESSION)
 
-    markdown = corpus.read_text(encoding="utf-8")
-    filename = corpus.name
-    year = _doc_year(filename, markdown)
-    ctx = f"Tài liệu: {filename}" + (f" · Năm: {year}" if year else "")
-    chunks = chunk_markdown(
-        markdown,
-        doc_id=corpus.stem,
-        doc_name=filename,
-        chunk_size=settings.chunk_size,
-        overlap=settings.chunk_overlap,
-        doc_context=ctx,
-        year=year,
-    )
-    return store.add(_EVAL_SESSION, chunks)
+    total, years = 0, set()
+    for path in _corpus_files(corpus):
+        markdown = path.read_text(encoding="utf-8")
+        year = _doc_year(path.name, markdown)
+        if year:
+            years.add(year)
+        ctx = f"Tài liệu: {path.name}" + (f" · Năm: {year}" if year else "")
+        chunks = chunk_markdown(
+            markdown,
+            doc_id=path.stem,
+            doc_name=path.name,
+            chunk_size=settings.chunk_size,
+            overlap=settings.chunk_overlap,
+            doc_context=ctx,
+            year=year,
+        )
+        total += store.add(_EVAL_SESSION, chunks)
+    return total, sorted(years)
 
 
 # --------------------------------------------------------------------------- #
@@ -182,15 +201,29 @@ def retrieved_pages(sources) -> list[int]:
     return pages
 
 
+_DOCYEAR_RE = __import__("re").compile(r"(19|20)\d{2}")
+
+
+def _hit_year(source) -> int | None:
+    """Year of a retrieved chunk, read from its document name (e.g.
+    ``2023_bctc_hop_nhat_tables.md``)."""
+    m = _DOCYEAR_RE.search(getattr(source, "doc_name", "") or "")
+    return int(m.group(0)) if m else None
+
+
 def eval_item(pipeline, item: Item, *, retrieval_only: bool, judge: bool) -> dict:
     answerable = item.answer_type != "unanswerable"
     res: dict = {"id": item.id, "answer_type": item.answer_type}
 
     sources = pipeline.retrieve(_EVAL_SESSION, item.question)
+    context = "\n\n".join(s.text for s in sources)
     pages = retrieved_pages(sources)
     res["retrieved_pages"] = pages
+    res["retrieved_years"] = sorted({y for s in sources if (y := _hit_year(s)) is not None})
 
-    # ---- retrieval metrics (only meaningful for answerable items) ----
+    # ---- retrieval metrics ----
+    # v1 has page labels; v2 uses number-grounded context recall (RAGAS-style) and
+    # period coverage, which need no per-page labels for the multi-year corpus.
     if answerable and item.relevant_pages:
         rel = item.relevant_pages
         for k in _K_VALUES:
@@ -200,6 +233,11 @@ def eval_item(pipeline, item: Item, *, retrieval_only: bool, judge: bool) -> dic
             res[f"ndcg@{k}"] = M.ndcg_at_k(pages, rel, k)
         res["mrr"] = M.reciprocal_rank(pages, rel)
         res["map"] = M.average_precision(pages, rel)
+    if answerable and item.gold_numbers:
+        res["context_recall_num"] = M.context_number_recall(context, item.gold_numbers)
+    if answerable and item.relevant_years:
+        got = set(res["retrieved_years"])
+        res["year_coverage"] = len(item.relevant_years & got) / len(item.relevant_years)
 
     if retrieval_only:
         return res
@@ -231,7 +269,6 @@ def eval_item(pipeline, item: Item, *, retrieval_only: bool, judge: bool) -> dic
 
     if judge:
         chat = pipeline.llm.chat
-        context = "\n\n".join(s.text for s in sources)
         # Each judge call is its own LLM request; a failed one shouldn't sink the
         # others or the run. Missing scores are simply dropped from the average.
         def _safe(fn, *a):
@@ -241,10 +278,13 @@ def eval_item(pipeline, item: Item, *, retrieval_only: bool, judge: bool) -> dic
                 res.setdefault("judge_errors", []).append(str(exc))
                 return float("nan")
 
-        res["judge_faithfulness"] = _safe(M.judge_faithfulness, answer, context)
-        res["judge_answer_relevancy"] = _safe(M.judge_answer_relevancy, item.question, answer)
+        # The four RAGAS metrics: two retrieval-side, two generation-side.
+        res["ragas_context_precision"] = _safe(M.judge_context_precision, item.question, context)
+        res["ragas_faithfulness"] = _safe(M.judge_faithfulness, answer, context)
+        res["ragas_answer_relevancy"] = _safe(M.judge_answer_relevancy, item.question, answer)
         if answerable:
-            res["judge_answer_correctness"] = _safe(
+            res["ragas_context_recall"] = _safe(M.judge_context_recall, item.ground_truth, context)
+            res["ragas_answer_correctness"] = _safe(
                 M.judge_answer_correctness, item.question, answer, item.ground_truth
             )
     return res
@@ -271,7 +311,11 @@ def aggregate(rows: list[dict], *, retrieval_only: bool, judge: bool) -> dict:
     for k in _K_VALUES:
         for name in ("recall", "precision", "hit", "ndcg"):
             metric_keys.append((f"{name}@{k}", _ANSWERABLE))
-    metric_keys += [("mrr", _ANSWERABLE), ("map", _ANSWERABLE)]
+    metric_keys += [
+        ("mrr", _ANSWERABLE), ("map", _ANSWERABLE),
+        ("context_recall_num", _ANSWERABLE),  # number-grounded RAGAS context recall
+        ("year_coverage", _ANSWERABLE),       # cross-period retrieval coverage
+    ]
     if not retrieval_only:
         metric_keys += [
             ("numeric_recall", _ANSWERABLE),
@@ -283,9 +327,11 @@ def aggregate(rows: list[dict], *, retrieval_only: bool, judge: bool) -> dict:
         ]
     if judge:
         metric_keys += [
-            ("judge_faithfulness", _ALL),
-            ("judge_answer_relevancy", _ALL),
-            ("judge_answer_correctness", _ANSWERABLE),
+            ("ragas_context_precision", _ALL),
+            ("ragas_context_recall", _ANSWERABLE),
+            ("ragas_faithfulness", _ALL),
+            ("ragas_answer_relevancy", _ALL),
+            ("ragas_answer_correctness", _ANSWERABLE),
         ]
 
     overall: dict = {}
@@ -295,8 +341,8 @@ def aggregate(rows: list[dict], *, retrieval_only: bool, judge: bool) -> dict:
     # break the headline metrics down by answer_type
     by_type: dict = {}
     types = sorted({r["answer_type"] for r in rows})
-    headline = ["recall@5", "mrr", "numeric_exact", "token_f1",
-                "judge_answer_correctness", "abstention_correct", "false_abstention"]
+    headline = ["context_recall_num", "year_coverage", "numeric_exact", "token_f1",
+                "ragas_answer_correctness", "abstention_correct", "false_abstention"]
     for t in types:
         sub = [r for r in rows if r["answer_type"] == t]
         by_type[t] = {
@@ -313,6 +359,15 @@ def aggregate(rows: list[dict], *, retrieval_only: bool, judge: bool) -> dict:
 
 def _fmt(v) -> str:
     return "—" if v is None else f"{v:.3f}"
+
+
+def _rel(p: Path) -> str:
+    """Path relative to the repo root when possible, else as given (handles
+    relative --dataset/--corpus args that aren't under the repo)."""
+    try:
+        return str(p.resolve().relative_to(_REPO_ROOT))
+    except ValueError:
+        return str(p)
 
 
 def write_reports(agg: dict, rows: list[dict], outdir: Path, meta: dict) -> Path:
@@ -335,25 +390,21 @@ def write_reports(agg: dict, rows: list[dict], outdir: Path, meta: dict) -> Path
         f"- Run: `{meta['timestamp']}`",
         f"- Dataset: `{meta['dataset']}` ({agg['n_items']} questions)",
         f"- Corpus: `{meta['corpus']}` ({meta['chunks_indexed']} chunks indexed)",
-        f"- Mode: {meta['mode']}  |  Hybrid: {meta['hybrid']}  |  Routing: {meta['routing']}",
+        f"- Mode: {meta['mode']}  |  Hybrid: {meta['hybrid']}  |  Routing: {meta['routing']}  |  Graph: {meta.get('graph')}",
         f"- Model: `{meta['embed_model']}` (dense) + BM25  →  `{meta['llm_model']}`",
         f"- Wall time: {meta['seconds']:.1f}s",
         "",
         "## Retrieval (answerable questions)",
         "",
-        "| k | Recall@k | Precision@k | Hit@k | nDCG@k |",
-        "|---|---|---|---|---|",
+        "| Metric | Score |",
+        "|---|---|",
+        f"| Context recall — number-grounded (RAGAS proxy) | {_fmt(o.get('context_recall_num'))} |",
+        f"| Period coverage (cross-year fan-out) | {_fmt(o.get('year_coverage'))} |",
     ]
-    for k in _K_VALUES:
-        lines.append(
-            f"| {k} | {_fmt(o.get(f'recall@{k}'))} | {_fmt(o.get(f'precision@{k}'))} "
-            f"| {_fmt(o.get(f'hit@{k}'))} | {_fmt(o.get(f'ndcg@{k}'))} |"
-        )
-    lines += [
-        "",
-        f"- **MRR**: {_fmt(o.get('mrr'))}   **MAP**: {_fmt(o.get('map'))}",
-        "",
-    ]
+    if o.get("recall@5") is not None:  # v1 page-level labels present
+        lines.append(f"| Recall@5 (page-level) | {_fmt(o.get('recall@5'))} |")
+        lines.append(f"| MRR (page-level) | {_fmt(o.get('mrr'))} |")
+    lines.append("")
     if "numeric_exact" in o:
         lines += [
             "## Generation",
@@ -365,29 +416,31 @@ def write_reports(agg: dict, rows: list[dict], outdir: Path, meta: dict) -> Path
             f"| Token-F1 vs reference | {_fmt(o.get('token_f1'))} |",
             f"| ROUGE-L vs reference | {_fmt(o.get('rouge_l'))} |",
             f"| Abstention accuracy (unanswerable items) | {_fmt(o.get('abstention_correct'))} |",
-            f"| False-abstention rate (answerable items, lower=better) | {_fmt(o.get('false_abstention'))} |",
+            f"| False-abstention rate (answerable, lower=better) | {_fmt(o.get('false_abstention'))} |",
             "",
         ]
-    if "judge_faithfulness" in o:
+    if "ragas_faithfulness" in o:
         lines += [
-            "## LLM judge (RAGAS-style)",
+            f"## RAGAS metrics (LLM judge, n={meta.get('judged', '?')} sampled)",
             "",
-            "| Metric | Score |",
+            "| RAGAS metric | Score |",
             "|---|---|",
-            f"| Faithfulness / groundedness | {_fmt(o.get('judge_faithfulness'))} |",
-            f"| Answer relevancy | {_fmt(o.get('judge_answer_relevancy'))} |",
-            f"| Answer correctness | {_fmt(o.get('judge_answer_correctness'))} |",
+            f"| Context Precision | {_fmt(o.get('ragas_context_precision'))} |",
+            f"| Context Recall | {_fmt(o.get('ragas_context_recall'))} |",
+            f"| Faithfulness | {_fmt(o.get('ragas_faithfulness'))} |",
+            f"| Answer Relevancy | {_fmt(o.get('ragas_answer_relevancy'))} |",
+            f"| Answer Correctness | {_fmt(o.get('ragas_answer_correctness'))} |",
             "",
         ]
 
     lines += ["## Breakdown by question type", "",
-              "| Type | n | Recall@5 | MRR | NumExact | TokenF1 | Correctness | Abstain✓ | FalseAbstain |",
+              "| Type | n | CtxRecall# | YearCov | NumExact | TokenF1 | Correctness | Abstain✓ | FalseAbstain |",
               "|---|---|---|---|---|---|---|---|---|"]
     for t, d in agg["by_type"].items():
         lines.append(
-            f"| {t} | {d['n']} | {_fmt(d.get('recall@5'))} | {_fmt(d.get('mrr'))} "
+            f"| {t} | {d['n']} | {_fmt(d.get('context_recall_num'))} | {_fmt(d.get('year_coverage'))} "
             f"| {_fmt(d.get('numeric_exact'))} | {_fmt(d.get('token_f1'))} "
-            f"| {_fmt(d.get('judge_answer_correctness'))} | {_fmt(d.get('abstention_correct'))} "
+            f"| {_fmt(d.get('ragas_answer_correctness'))} | {_fmt(d.get('abstention_correct'))} "
             f"| {_fmt(d.get('false_abstention'))} |"
         )
     lines.append("")
@@ -413,6 +466,9 @@ def main() -> int:
                     help="skip generation; IR metrics only (no Groq key needed)")
     ap.add_argument("--judge", action="store_true",
                     help="also run the RAGAS-style LLM judge (uses Groq)")
+    ap.add_argument("--judge-sample", type=int, default=40,
+                    help="run the RAGAS LLM judge on only the first N items "
+                         "(rate-limit friendly; deterministic metrics still cover all)")
     ap.add_argument("--no-index", action="store_true",
                     help="reuse an already-indexed eval session (skip re-embedding)")
     args = ap.parse_args()
@@ -420,8 +476,10 @@ def main() -> int:
     items = load_dataset(args.dataset, args.limit)
     print(f"[finsight-eval] {len(items)} questions from {args.dataset}")
 
+    # known corpus years drive the Graph-RAG "all years" expansion
+    known_years = sorted({y for it in items for y in it.relevant_years})
     try:
-        pipeline, store, settings = build_pipeline(args.retrieval_only)
+        pipeline, store, settings = build_pipeline(args.retrieval_only, known_years)
     except Exception as exc:  # noqa: BLE001
         print(f"[finsight-eval] failed to build pipeline: {exc}")
         print("  Is Qdrant running?  ->  docker compose up -d qdrant")
@@ -430,28 +488,37 @@ def main() -> int:
     t0 = time.perf_counter()
     n_chunks = "(reused)"
     if not args.no_index:
-        print(f"[finsight-eval] indexing corpus {args.corpus.name} …")
-        n_chunks = index_corpus(store, settings, args.corpus, reset=True)
-        print(f"[finsight-eval] indexed {n_chunks} chunks")
+        print(f"[finsight-eval] indexing corpus {args.corpus} …")
+        n_chunks, corpus_years = index_corpus(store, settings, args.corpus, reset=True)
+        if corpus_years:
+            pipeline.known_years = corpus_years
+        print(f"[finsight-eval] indexed {n_chunks} chunks; years={corpus_years}")
 
+    judged = 0
     rows: list[dict] = []
     for i, item in enumerate(items, 1):
+        # judge only the first --judge-sample items to respect Groq rate limits
+        do_judge = args.judge and i <= args.judge_sample
+        if do_judge:
+            judged += 1
         rows.append(eval_item(pipeline, item,
-                              retrieval_only=args.retrieval_only, judge=args.judge))
+                              retrieval_only=args.retrieval_only, judge=do_judge))
         if i % 10 == 0 or i == len(items):
             print(f"[finsight-eval] {i}/{len(items)} done")
 
     elapsed = time.perf_counter() - t0
     mode = ("retrieval-only" if args.retrieval_only
-            else ("generation+judge" if args.judge else "generation"))
+            else ("generation+RAGAS" if args.judge else "generation"))
     meta = {
         "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "dataset": str(args.dataset.relative_to(_REPO_ROOT)),
-        "corpus": str(args.corpus.relative_to(_REPO_ROOT)),
+        "dataset": _rel(args.dataset),
+        "corpus": _rel(args.corpus),
         "chunks_indexed": n_chunks,
         "mode": mode,
         "hybrid": settings.use_hybrid,
         "routing": settings.use_routing,
+        "graph": settings.use_graph,
+        "judged": judged,
         "embed_model": settings.embed_model,
         "llm_model": settings.groq_model,
         "top_k": settings.top_k,
@@ -462,12 +529,14 @@ def main() -> int:
 
     o = agg["overall"]
     print("\n=== Finsight RAG benchmark ===")
-    print(f"  Recall@5 : {_fmt(o.get('recall@5'))}   MRR: {_fmt(o.get('mrr'))}")
+    print(f"  CtxRecall#: {_fmt(o.get('context_recall_num'))}   YearCov: {_fmt(o.get('year_coverage'))}")
     if not args.retrieval_only:
         print(f"  NumExact : {_fmt(o.get('numeric_exact'))}   TokenF1: {_fmt(o.get('token_f1'))}")
         print(f"  Abstain✓ : {_fmt(o.get('abstention_correct'))}   FalseAbstain: {_fmt(o.get('false_abstention'))}")
     if args.judge:
-        print(f"  Faithful : {_fmt(o.get('judge_faithfulness'))}   Correctness: {_fmt(o.get('judge_answer_correctness'))}")
+        print(f"  RAGAS(n={judged}): faith {_fmt(o.get('ragas_faithfulness'))} "
+              f"| ctx_prec {_fmt(o.get('ragas_context_precision'))} "
+              f"| correctness {_fmt(o.get('ragas_answer_correctness'))}")
     print(f"  Report   : {md_path}")
     return 0
 

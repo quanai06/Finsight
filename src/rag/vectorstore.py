@@ -180,7 +180,10 @@ class VectorStore:
                 buffer = []
             if progress_cb is not None:
                 progress_cb(done, total)
-        if buffer:
+        # Re-check before the trailing flush: without this, a cancel arriving after
+        # the last per-chunk check would still upsert the final batch, leaving
+        # orphan vectors after the caller deletes the (partial) document.
+        if buffer and not (should_cancel is not None and should_cancel()):
             self.client.upsert(self.collection, points=buffer)
         return done
 

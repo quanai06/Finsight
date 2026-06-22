@@ -97,6 +97,9 @@ class Settings:
         # Route a question to its financial statement / note / year and soft-filter
         # retrieval to that branch (falls back to unfiltered if it comes back empty).
         self.use_routing = _env("FINSIGHT_USE_ROUTING", "true").lower() == "true"
+        # Graph-RAG cross-period fan-out: questions spanning several years search
+        # each year and merge, so cross-file/cross-year answers see every period.
+        self.use_graph = _env("FINSIGHT_USE_GRAPH", "true").lower() == "true"
         # Strict-grounding cutoff on the top retrieval score; 0 disables it (a
         # non-zero value can reject BM25-only exact matches — tune per corpus).
         self.score_threshold = float(_env("FINSIGHT_SCORE_THRESHOLD", "0.0"))

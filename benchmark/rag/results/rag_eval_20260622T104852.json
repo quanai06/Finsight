@@ -1,0 +1,6009 @@
+{
+  "meta": {
+    "timestamp": "2026-06-22T10:48:52+00:00",
+    "dataset": "data/rag/finsight_finqa_eval_v2.jsonl",
+    "corpus": "data/rag/corpus",
+    "chunks_indexed": 561,
+    "mode": "retrieval-only",
+    "hybrid": true,
+    "routing": true,
+    "graph": true,
+    "judged": 0,
+    "embed_model": "intfloat/multilingual-e5-large",
+    "llm_model": "llama-3.3-70b-versatile",
+    "top_k": 8,
+    "seconds": 4380.045869827998
+  },
+  "aggregate": {
+    "overall": {
+      "recall@1": null,
+      "precision@1": null,
+      "hit@1": null,
+      "ndcg@1": null,
+      "recall@3": null,
+      "precision@3": null,
+      "hit@3": null,
+      "ndcg@3": null,
+      "recall@5": null,
+      "precision@5": null,
+      "hit@5": null,
+      "ndcg@5": null,
+      "recall@8": null,
+      "precision@8": null,
+      "hit@8": null,
+      "ndcg@8": null,
+      "mrr": null,
+      "map": null,
+      "context_recall_num": 0.48590021691973967,
+      "year_coverage": 0.657563025210084
+    },
+    "by_type": {
+      "factual": {
+        "n": 15,
+        "context_recall_num": 1.0,
+        "year_coverage": 1.0,
+        "numeric_exact": null,
+        "token_f1": null,
+        "ragas_answer_correctness": null,
+        "abstention_correct": null,
+        "false_abstention": null
+      },
+      "multi_year": {
+        "n": 32,
+        "context_recall_num": 0.15625,
+        "year_coverage": 0.25,
+        "numeric_exact": null,
+        "token_f1": null,
+        "ragas_answer_correctness": null,
+        "abstention_correct": null,
+        "false_abstention": null
+      },
+      "numeric_compare": {
+        "n": 140,
+        "context_recall_num": 0.39285714285714285,
+        "year_coverage": 0.4857142857142857,
+        "numeric_exact": null,
+        "token_f1": null,
+        "ragas_answer_correctness": null,
+        "abstention_correct": null,
+        "false_abstention": null
+      },
+      "numeric_single": {
+        "n": 195,
+        "context_recall_num": 0.7128205128205128,
+        "year_coverage": 0.9948717948717949,
+        "numeric_exact": null,
+        "token_f1": null,
+        "ragas_answer_correctness": null,
+        "abstention_correct": null,
+        "false_abstention": null
+      },
+      "policy": {
+        "n": 13,
+        "context_recall_num": 1.0,
+        "year_coverage": 1.0,
+        "numeric_exact": null,
+        "token_f1": null,
+        "ragas_answer_correctness": null,
+        "abstention_correct": null,
+        "false_abstention": null
+      },
+      "reasoning": {
+        "n": 81,
+        "context_recall_num": 0.14814814814814814,
+        "year_coverage": 0.18518518518518517,
+        "numeric_exact": null,
+        "token_f1": null,
+        "ragas_answer_correctness": null,
+        "abstention_correct": null,
+        "false_abstention": null
+      },
+      "unanswerable": {
+        "n": 7,
+        "context_recall_num": null,
+        "year_coverage": null,
+        "numeric_exact": null,
+        "token_f1": null,
+        "ragas_answer_correctness": null,
+        "abstention_correct": null,
+        "false_abstention": null
+      }
+    },
+    "n_items": 483
+  },
+  "items": [
+    {
+      "id": "fin2-001",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        17,
+        12,
+        19,
+        21,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-002",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        12,
+        17,
+        16,
+        4
+      ],
+      "retrieved_years": [
+        2021,
+        2022
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-003",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        12,
+        17,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-004",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        12,
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-005",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        12,
+        17,
+        16,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-006",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        17,
+        12,
+        16,
+        19,
+        4
+      ],
+      "retrieved_years": [
+        2021,
+        2022
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-007",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        12,
+        17,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-008",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        12,
+        19,
+        17,
+        21
+      ],
+      "retrieved_years": [
+        2021,
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-009",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        17,
+        12,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-010",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        12,
+        17,
+        19,
+        11,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-011",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        12,
+        17,
+        16,
+        4
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-012",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-013",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-014",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-015",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-016",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        12,
+        19,
+        17,
+        16,
+        21
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-017",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-018",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-019",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-020",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-021",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        15,
+        12,
+        16,
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-022",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        12,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-023",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        15,
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-024",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        15,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-025",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        12,
+        16
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-026",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-027",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-028",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-029",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-030",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        12,
+        19,
+        17,
+        21,
+        16,
+        13
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-031",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-032",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-033",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-034",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-035",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        11,
+        20,
+        17,
+        12,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-036",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        11,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-037",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        11,
+        12,
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-038",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        11,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-039",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        11
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-040",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-041",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        11,
+        20,
+        19,
+        12,
+        21,
+        17,
+        15
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-042",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-043",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-044",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-045",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-046",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        11,
+        21,
+        20,
+        15,
+        12
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-047",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-048",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-049",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-050",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-051",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        11,
+        20,
+        12,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-052",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        20,
+        11,
+        12,
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-053",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        20,
+        12,
+        11
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-054",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        11,
+        20,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-055",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        20,
+        12,
+        11,
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-056",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        11,
+        12,
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-057",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        11,
+        12,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-058",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        11
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-059",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        11,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-060",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        11,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-061",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        16,
+        17,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-062",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-063",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-064",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-065",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-066",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        15,
+        21,
+        11,
+        13,
+        19,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-067",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        19,
+        21,
+        15,
+        11,
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-068",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        19,
+        15,
+        11,
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-069",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        11,
+        21
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-070",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        19,
+        21,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-071",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        19,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-072",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        16,
+        17,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-073",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-074",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-075",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-076",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        16,
+        12,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-077",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-078",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        19,
+        12,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-079",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-080",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-081",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        15,
+        16,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-082",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        19,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-083",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        15,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-084",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-085",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-086",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        19,
+        13,
+        16,
+        21,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-087",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        16,
+        13,
+        17,
+        12,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-088",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        11,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-089",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        19,
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-090",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        16,
+        15,
+        17,
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-091",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        19,
+        21,
+        15,
+        16,
+        12,
+        17
+      ],
+      "retrieved_years": [
+        2021,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-092",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        15,
+        11,
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-093",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        19,
+        13,
+        15,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-094",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        19,
+        15,
+        11
+      ],
+      "retrieved_years": [
+        2021,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-095",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-096",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        19,
+        13,
+        14,
+        15,
+        21
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-097",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-098",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-099",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-100",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-101",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        15,
+        16,
+        17,
+        20
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-102",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        15,
+        11
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-103",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-104",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-105",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-106",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        15,
+        16,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-107",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        19,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-108",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-109",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-110",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        19,
+        13,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-111",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        19,
+        15,
+        13,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-112",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        15,
+        13,
+        16,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-113",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        15,
+        13,
+        16,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-114",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-115",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        15,
+        16,
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-116",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        19,
+        16,
+        13,
+        15,
+        12,
+        17
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-117",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-118",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-119",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-120",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-121",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        15,
+        16,
+        11,
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-122",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        19,
+        13,
+        15,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-123",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        15,
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-124",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-125",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        19,
+        15,
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-126",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        19,
+        15,
+        12,
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-127",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        15,
+        12,
+        13,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-128",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        15,
+        13,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-129",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-130",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        15,
+        16,
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-131",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        15,
+        16,
+        12,
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-132",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        15,
+        16,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-133",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        15,
+        19,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-134",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        15,
+        13,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-135",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        15,
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-136",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        15,
+        11
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-137",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        15,
+        13,
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-138",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        15,
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-139",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-140",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        15,
+        19,
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-141",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        15,
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-142",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-143",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-144",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-145",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-146",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        15,
+        16,
+        12,
+        14
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-147",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        15,
+        12,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-148",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        19,
+        15,
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-149",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        15,
+        13,
+        16,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-150",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        15,
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-151",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        12,
+        13,
+        16,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-152",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        19,
+        12,
+        16,
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-153",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        16,
+        12,
+        13,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-154",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-155",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        19,
+        16,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-156",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        12,
+        16,
+        15,
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2025
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-157",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        16,
+        12,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-158",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        12,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-159",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-160",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        16,
+        12,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-161",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-162",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-163",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-164",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-165",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-166",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-167",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-168",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-169",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-170",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-171",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-172",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-173",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-174",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-175",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-176",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-177",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-178",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-179",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-180",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-181",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-182",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-183",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-184",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-185",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-186",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-187",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-188",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-189",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        15,
+        13,
+        14,
+        19,
+        12,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022
+      ],
+      "context_recall_num": 0.5,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-190",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022,
+        2023
+      ],
+      "context_recall_num": 0.5,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-191",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023,
+        2024
+      ],
+      "context_recall_num": 0.5,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-192",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024,
+        2025
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-193",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-194",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-195",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-196",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-197",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-198",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-199",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-200",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-201",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-202",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-203",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-204",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-205",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        15,
+        16,
+        13,
+        12,
+        11,
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2022
+      ],
+      "context_recall_num": 0.5,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-206",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022,
+        2023
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-207",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023,
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-208",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024,
+        2025
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-209",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-210",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-211",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-212",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-213",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-214",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-215",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-216",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-217",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-218",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-219",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-220",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-221",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-222",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-223",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-224",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-225",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-226",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-227",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-228",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-229",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-230",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-231",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-232",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-233",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-234",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-235",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-236",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-237",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-238",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-239",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-240",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-241",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-242",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-243",
+      "answer_type": "multi_year",
+      "retrieved_pages": [
+        17,
+        16,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-244",
+      "answer_type": "multi_year",
+      "retrieved_pages": [
+        12,
+        16,
+        17
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 0.8,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-245",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-246",
+      "answer_type": "multi_year",
+      "retrieved_pages": [
+        12,
+        16,
+        14
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 0.6,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-247",
+      "answer_type": "multi_year",
+      "retrieved_pages": [
+        12,
+        17,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-248",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-249",
+      "answer_type": "multi_year",
+      "retrieved_pages": [
+        11,
+        20,
+        15,
+        17
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 0.2,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-250",
+      "answer_type": "multi_year",
+      "retrieved_pages": [
+        11,
+        21,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 0.8,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-251",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-252",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-253",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-254",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-255",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-256",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-257",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-258",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-259",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-260",
+      "answer_type": "multi_year",
+      "retrieved_pages": [
+        19,
+        13,
+        15,
+        14
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 0.4,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-261",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-262",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-263",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-264",
+      "answer_type": "multi_year",
+      "retrieved_pages": [
+        19,
+        15,
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 0.2,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-265",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-266",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-267",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-268",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-269",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-270",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-271",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-272",
+      "answer_type": "multi_year",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-273",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-274",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-275",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-276",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-277",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-278",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-279",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-280",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-281",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-282",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-283",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-284",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-285",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-286",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-287",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-288",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-289",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-290",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-291",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-292",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-293",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-294",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-295",
+      "answer_type": "reasoning",
+      "retrieved_pages": [
+        12,
+        16,
+        17,
+        18,
+        15,
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-296",
+      "answer_type": "reasoning",
+      "retrieved_pages": [
+        12,
+        16,
+        20
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-297",
+      "answer_type": "reasoning",
+      "retrieved_pages": [
+        13,
+        16,
+        15,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-298",
+      "answer_type": "reasoning",
+      "retrieved_pages": [
+        12,
+        13,
+        16,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-299",
+      "answer_type": "reasoning",
+      "retrieved_pages": [
+        13,
+        15,
+        12,
+        16,
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-300",
+      "answer_type": "reasoning",
+      "retrieved_pages": [
+        13,
+        15,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-301",
+      "answer_type": "reasoning",
+      "retrieved_pages": [
+        15,
+        13,
+        19,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-302",
+      "answer_type": "reasoning",
+      "retrieved_pages": [
+        16,
+        15,
+        12,
+        13,
+        14
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-303",
+      "answer_type": "reasoning",
+      "retrieved_pages": [
+        16,
+        12,
+        15,
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-304",
+      "answer_type": "reasoning",
+      "retrieved_pages": [
+        16,
+        12,
+        15,
+        14
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-305",
+      "answer_type": "reasoning",
+      "retrieved_pages": [
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-306",
+      "answer_type": "reasoning",
+      "retrieved_pages": [
+        16,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-307",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        11,
+        20,
+        12,
+        15,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-308",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        11,
+        12,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2025
+      ],
+      "context_recall_num": 0.5,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-309",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        11
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-310",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        11
+      ],
+      "retrieved_years": [
+        2021,
+        2024,
+        2025
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-311",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        11,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2025
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-312",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-313",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        11,
+        20,
+        15,
+        16,
+        12
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-314",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-315",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-316",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024
+      ],
+      "context_recall_num": 0.5,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-317",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-318",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        11,
+        15,
+        21,
+        20
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-319",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-320",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-321",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-322",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-323",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        11,
+        20,
+        15,
+        12,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-324",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        20,
+        11,
+        15,
+        12,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024
+      ],
+      "context_recall_num": 0.5,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-325",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        20,
+        11,
+        12,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-326",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        11,
+        20
+      ],
+      "retrieved_years": [
+        2021,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-327",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        11,
+        20,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-328",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        11,
+        12,
+        15,
+        16,
+        20
+      ],
+      "retrieved_years": [
+        2021,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-329",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        11,
+        12,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2025
+      ],
+      "context_recall_num": 0.5,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-330",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        11
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-331",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        11
+      ],
+      "retrieved_years": [
+        2021,
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-332",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        11
+      ],
+      "retrieved_years": [
+        2021,
+        2025
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-333",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        12,
+        16,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-334",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        12,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2025
+      ],
+      "context_recall_num": 0.5,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-335",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        12,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-336",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-337",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        12,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-338",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        12,
+        16,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-339",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        12,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2025
+      ],
+      "context_recall_num": 0.5,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-340",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        12,
+        16,
+        11
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-341",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-342",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        12,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-343",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        12,
+        16,
+        14,
+        15
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-344",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-345",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-346",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-347",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-348",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        12,
+        16,
+        15,
+        14
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-349",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-350",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-351",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-352",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-353",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        15,
+        12,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-354",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        15,
+        12,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-355",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        15,
+        12
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-356",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        15,
+        12,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-357",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        12,
+        16,
+        14,
+        15
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-358",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-359",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-360",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-361",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-362",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [
+        12,
+        15,
+        16,
+        11
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-363",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-364",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-365",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-366",
+      "answer_type": "numeric_compare",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-367",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        13,
+        4,
+        15,
+        16,
+        11,
+        14,
+        17
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-368",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-369",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-370",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-371",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2025
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-372",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        15,
+        4,
+        14,
+        16,
+        12,
+        13
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-373",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-374",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-375",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-376",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2025
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-377",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        15,
+        4,
+        16,
+        14,
+        13,
+        12,
+        17
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-378",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-379",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-380",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-381",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2025
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-382",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        15,
+        4,
+        16,
+        14,
+        13,
+        12,
+        11
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-383",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-384",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-385",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-386",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2025
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-387",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        12,
+        4,
+        16,
+        14,
+        15
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-388",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-389",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-390",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-391",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2025
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-392",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        12,
+        4,
+        16,
+        17,
+        14
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-393",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-394",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-395",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-396",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2025
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-397",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [
+        12,
+        4,
+        16,
+        11,
+        14,
+        15
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-398",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2022
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-399",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2023
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-400",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2024
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-401",
+      "answer_type": "numeric_single",
+      "retrieved_pages": [],
+      "retrieved_years": [
+        2025
+      ],
+      "context_recall_num": 0.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-402",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-403",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-404",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-405",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-406",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-407",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-408",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-409",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-410",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-411",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-412",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-413",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-414",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-415",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-416",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-417",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-418",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-419",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-420",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-421",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-422",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-423",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-424",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-425",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-426",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-427",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-428",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-429",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-430",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-431",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-432",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-433",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-434",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-435",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-436",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-437",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-438",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-439",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-440",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-441",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-442",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-443",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-444",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-445",
+      "answer_type": "reasoning",
+      "retrieved_pages": [],
+      "retrieved_years": [],
+      "context_recall_num": 0.0,
+      "year_coverage": 0.0
+    },
+    {
+      "id": "fin2-446",
+      "answer_type": "factual",
+      "retrieved_pages": [
+        4,
+        14
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2025
+      ],
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-447",
+      "answer_type": "factual",
+      "retrieved_pages": [
+        4,
+        14,
+        17,
+        12
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-448",
+      "answer_type": "factual",
+      "retrieved_pages": [
+        4,
+        14,
+        19,
+        18,
+        17,
+        20
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-449",
+      "answer_type": "factual",
+      "retrieved_pages": [
+        4,
+        17,
+        14,
+        12,
+        16,
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-450",
+      "answer_type": "factual",
+      "retrieved_pages": [
+        4,
+        17,
+        14,
+        22,
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-451",
+      "answer_type": "factual",
+      "retrieved_pages": [
+        4,
+        14,
+        17,
+        19
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2025
+      ],
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-452",
+      "answer_type": "factual",
+      "retrieved_pages": [
+        17,
+        12,
+        20,
+        4
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-453",
+      "answer_type": "factual",
+      "retrieved_pages": [
+        17,
+        19,
+        21,
+        12,
+        4
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-454",
+      "answer_type": "factual",
+      "retrieved_pages": [
+        17,
+        19,
+        13,
+        4,
+        18,
+        20
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-455",
+      "answer_type": "factual",
+      "retrieved_pages": [
+        14,
+        19,
+        17,
+        18,
+        4,
+        21
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-456",
+      "answer_type": "factual",
+      "retrieved_pages": [
+        4,
+        14,
+        19,
+        12,
+        17
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-457",
+      "answer_type": "factual",
+      "retrieved_pages": [
+        17,
+        4,
+        11,
+        12
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-458",
+      "answer_type": "factual",
+      "retrieved_pages": [
+        18
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-459",
+      "answer_type": "factual",
+      "retrieved_pages": [
+        18
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-460",
+      "answer_type": "factual",
+      "retrieved_pages": [
+        17,
+        16,
+        4,
+        20
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-461",
+      "answer_type": "policy",
+      "retrieved_pages": [
+        23,
+        22,
+        21,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2024,
+        2025
+      ],
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-462",
+      "answer_type": "policy",
+      "retrieved_pages": [
+        23
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-463",
+      "answer_type": "policy",
+      "retrieved_pages": [
+        23
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-464",
+      "answer_type": "policy",
+      "retrieved_pages": [
+        23
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-465",
+      "answer_type": "policy",
+      "retrieved_pages": [
+        23,
+        22
+      ],
+      "retrieved_years": [
+        2021,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-466",
+      "answer_type": "policy",
+      "retrieved_pages": [
+        23,
+        22,
+        11
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2024,
+        2025
+      ],
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-467",
+      "answer_type": "policy",
+      "retrieved_pages": [
+        20,
+        22
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-468",
+      "answer_type": "policy",
+      "retrieved_pages": [
+        20,
+        23
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2025
+      ],
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-469",
+      "answer_type": "policy",
+      "retrieved_pages": [
+        19,
+        21,
+        18,
+        4
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2025
+      ],
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-470",
+      "answer_type": "policy",
+      "retrieved_pages": [
+        19,
+        18,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2023
+      ],
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-471",
+      "answer_type": "policy",
+      "retrieved_pages": [
+        22
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-472",
+      "answer_type": "policy",
+      "retrieved_pages": [
+        23
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-473",
+      "answer_type": "policy",
+      "retrieved_pages": [
+        22,
+        21,
+        23
+      ],
+      "retrieved_years": [
+        2021,
+        2023
+      ],
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-474",
+      "answer_type": "reasoning",
+      "retrieved_pages": [
+        13,
+        15,
+        14,
+        16
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-475",
+      "answer_type": "reasoning",
+      "retrieved_pages": [
+        15,
+        16,
+        18,
+        12,
+        13
+      ],
+      "retrieved_years": [
+        2021,
+        2024
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-476",
+      "answer_type": "reasoning",
+      "retrieved_pages": [
+        13
+      ],
+      "retrieved_years": [
+        2021
+      ],
+      "context_recall_num": 1.0,
+      "year_coverage": 1.0
+    },
+    {
+      "id": "fin2-477",
+      "answer_type": "unanswerable",
+      "retrieved_pages": [
+        13,
+        16,
+        15
+      ],
+      "retrieved_years": [
+        2021,
+        2023,
+        2025
+      ]
+    },
+    {
+      "id": "fin2-478",
+      "answer_type": "unanswerable",
+      "retrieved_pages": [
+        16,
+        12,
+        20,
+        14
+      ],
+      "retrieved_years": [
+        2021
+      ]
+    },
+    {
+      "id": "fin2-479",
+      "answer_type": "unanswerable",
+      "retrieved_pages": [
+        17,
+        14,
+        12,
+        4
+      ],
+      "retrieved_years": [
+        2021
+      ]
+    },
+    {
+      "id": "fin2-480",
+      "answer_type": "unanswerable",
+      "retrieved_pages": [
+        18,
+        16
+      ],
+      "retrieved_years": [
+        2021
+      ]
+    },
+    {
+      "id": "fin2-481",
+      "answer_type": "unanswerable",
+      "retrieved_pages": [
+        12,
+        4,
+        16,
+        14,
+        15
+      ],
+      "retrieved_years": [
+        2021
+      ]
+    },
+    {
+      "id": "fin2-482",
+      "answer_type": "unanswerable",
+      "retrieved_pages": [
+        4,
+        14,
+        16
+      ],
+      "retrieved_years": [
+        2021
+      ]
+    },
+    {
+      "id": "fin2-483",
+      "answer_type": "unanswerable",
+      "retrieved_pages": [
+        18
+      ],
+      "retrieved_years": [
+        2021,
+        2022,
+        2023,
+        2025
+      ]
+    }
+  ]
+}

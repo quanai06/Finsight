@@ -20,3 +20,4 @@ qdrant-client>=1.12,<1.13   # match the Qdrant server image in docker-compose
 sqlalchemy>=2.0             # ORM for Postgres (sessions/documents/chat)
 psycopg[binary]>=3.2        # PostgreSQL driver
 redis>=5.0                  # short-term conversational memory
+networkx>=3.0               # Graph-RAG financial fact graph (pure-Python, CPU)

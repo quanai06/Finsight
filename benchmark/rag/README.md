@@ -9,9 +9,33 @@ Groq generation) on the labelled Vietnamese-finance Q&A set in
 ```
 benchmark/rag/
 ├── README.md
+├── build_dataset.py    # generate the ~480-question multi-year v2 set (verified)
 ├── evaluate_rag.py     # end-to-end harness (index → retrieve → generate → score)
-├── metrics.py          # IR + numeric + lexical + abstention + LLM-judge metrics
+├── metrics.py          # IR + numeric + lexical + abstention + RAGAS judge metrics
 └── results/            # timestamped JSON + Markdown reports (latest.md = newest)
+```
+
+## RAGAS metrics + Graph-RAG
+
+The harness defaults to the multi-year v2 dataset and the whole `data/rag/corpus/`
+directory (5 years indexed). It reports the four **RAGAS** metrics — Context
+Precision, Context Recall, Faithfulness, Answer Relevancy (+ Answer Correctness) —
+via an LLM judge with **rate-limit backoff**, plus deterministic proxies (number-
+grounded context recall, period coverage, numeric exact-match) on every item.
+
+Because Groq's free tier is ~12k TPM, the LLM judge runs on a **sample**
+(`--judge-sample N`, default 40); deterministic metrics still cover all questions.
+
+```bash
+python -m benchmark.rag.evaluate_rag --retrieval-only          # all items, no Groq
+python -m benchmark.rag.evaluate_rag --judge --judge-sample 40 # RAGAS on a sample
+```
+
+A/B the Graph-RAG cross-period fan-out (helps `multi_year` questions most):
+
+```bash
+FINSIGHT_USE_GRAPH=true  python -m benchmark.rag.evaluate_rag --retrieval-only
+FINSIGHT_USE_GRAPH=false python -m benchmark.rag.evaluate_rag --retrieval-only
 ```
 
 ## What it measures
