@@ -67,10 +67,16 @@ class Settings:
         # --- Embedding / rerank (FastEmbed, ONNX CPU) ---
         self.embed_model = _env("FINSIGHT_EMBED_MODEL", "intfloat/multilingual-e5-large")
         self.embed_dim = int(_env("FINSIGHT_EMBED_DIM", "1024"))
+        # Hybrid retrieval: dense + sparse BM25 fused with RRF. BM25 is the lexical
+        # layer that pins exact figures/codes/years that dense vectors blur.
+        self.use_hybrid = _env("FINSIGHT_USE_HYBRID", "true").lower() == "true"
+        self.sparse_model = _env("FINSIGHT_SPARSE_MODEL", "Qdrant/bm25")
         self.rerank_model = _env(
             "FINSIGHT_RERANK_MODEL", "jinaai/jina-reranker-v2-base-multilingual"
         )
-        self.use_reranker = _env("FINSIGHT_USE_RERANKER", "true").lower() == "true"
+        # Reranker is OFF by default: heaviest stage on CPU. Hybrid + MMR recover
+        # most of its benefit far more cheaply (see src/rag/pipeline.py).
+        self.use_reranker = _env("FINSIGHT_USE_RERANKER", "false").lower() == "true"
 
         # Auto-run PaddleOCR-VL inside the API for scanned PDFs (no text layer).
         # OFF by default: it loads a 3-5 GB VLM into the uvicorn process per
@@ -79,12 +85,21 @@ class Settings:
         self.enable_api_ocr = _env("FINSIGHT_ENABLE_API_OCR", "false").lower() == "true"
 
         # --- Retrieval ---
-        self.retrieve_candidates = int(_env("FINSIGHT_RETRIEVE_CANDIDATES", "30"))
-        self.top_k = int(_env("FINSIGHT_TOP_K", "6"))
+        # Hybrid over-fetches candidates, then MMR trims to top_k. Bigger pools
+        # help long reports where the answer chunk sits past the first handful.
+        self.retrieve_candidates = int(_env("FINSIGHT_RETRIEVE_CANDIDATES", "50"))
+        self.top_k = int(_env("FINSIGHT_TOP_K", "8"))
+        self.mmr_lambda = float(_env("FINSIGHT_MMR_LAMBDA", "0.6"))  # 1=relevance, 0=diversity
+        # Route a question to its financial statement / note / year and soft-filter
+        # retrieval to that branch (falls back to unfiltered if it comes back empty).
+        self.use_routing = _env("FINSIGHT_USE_ROUTING", "true").lower() == "true"
+        # Strict-grounding cutoff on the top retrieval score; 0 disables it (a
+        # non-zero value can reject BM25-only exact matches — tune per corpus).
+        self.score_threshold = float(_env("FINSIGHT_SCORE_THRESHOLD", "0.0"))
 
-        # --- Chunking ---
-        self.chunk_size = int(_env("FINSIGHT_CHUNK_SIZE", "1000"))
-        self.chunk_overlap = int(_env("FINSIGHT_CHUNK_OVERLAP", "150"))
+        # --- Chunking (character budgets; prose packs larger than the old 1000) ---
+        self.chunk_size = int(_env("FINSIGHT_CHUNK_SIZE", "1800"))
+        self.chunk_overlap = int(_env("FINSIGHT_CHUNK_OVERLAP", "250"))
 
         # --- Short-term memory (Redis) ---
         self.memory_window = int(_env("FINSIGHT_MEMORY_WINDOW", "6"))   # turns fed to the LLM

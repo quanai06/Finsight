@@ -46,9 +46,10 @@ Một ứng dụng end-to-end hoàn chỉnh đặt trên nền pipeline OCR sẵ
 | --- | --- | --- |
 | Frontend | **React + Vite** | Giao diện home / session, gọi `/api/*` qua proxy của Vite |
 | Backend | **FastAPI + Uvicorn** | REST API, dependency injection cho các singleton nặng |
-| Embedding | **FastEmbed (ONNX, CPU)** | Nhúng vector đa ngôn ngữ, không cần GPU/PyTorch |
-| Vector DB | **Qdrant** | Lưu & tìm kiếm vector của chunk, lọc theo `session_id` |
-| Rerank | **FastEmbed cross-encoder** | Xếp hạng lại top-N ứng viên (có thể bật/tắt) |
+| Embedding (dense) | **FastEmbed e5-large (ONNX, CPU)** | Nhúng vector đa ngôn ngữ theo ngữ nghĩa, không cần GPU/PyTorch |
+| Sparse (lexical) | **BM25 qua FastEmbed** (`Qdrant/bm25`) | Khớp chính xác số/mã/năm; ~0 RAM; IDF do Qdrant tính |
+| Vector DB | **Qdrant (hybrid)** | Lưu cả dense+sparse, truy hồi lai **RRF** (`prefetch`+`FusionQuery`), lọc `session_id` |
+| Rerank | **FastEmbed cross-encoder** | Tuỳ chọn, **mặc định TẮT** — thay bằng MMR (nhẹ hơn nhiều trên CPU) |
 | Sinh văn bản | **Groq** (`llama-3.3-70b-versatile`) | LLM tạo câu trả lời, gọi qua `httpx` thuần |
 | CSDL quan hệ | **Postgres + SQLAlchemy 2.0** | Session, tài liệu, lịch sử chat bền vững |
 | Bộ nhớ ngắn hạn | **Redis** | Cửa sổ trượt các lượt chat gần đây, có TTL |
@@ -103,14 +104,20 @@ không cần refresh tay.
 
 1. **Lượt gần đây** lấy từ Redis (cửa sổ ngắn hạn); nếu cache trống thì mồi lại từ
    lịch sử bền trong Postgres.
-2. **Truy hồi** — câu hỏi được nhúng, Qdrant trả về top-N ứng viên đã lọc theo
-   `session_id`.
-3. **Rerank (tuỳ chọn)** — nếu bật, cross-encoder đọc cặp (câu hỏi, chunk) cùng
-   lúc và giữ lại top-K tốt nhất. Nếu tắt, dùng luôn điểm tương đồng vector.
-4. **Sinh câu trả lời** — các chunk thành ngữ cảnh đánh số `[1]…[K]`; LLM được yêu
-   cầu **chỉ** trả lời dựa trên ngữ cảnh đó và trích dẫn số trong ngoặc đã dùng.
-5. Lượt người dùng + trợ lý ghi vào **cả** Postgres (bền) lẫn Redis (cửa sổ làm việc).
-6. Trả về câu trả lời + citation (tên tài liệu, trang, điểm, đoạn trích).
+2. **Định tuyến (routing)** — heuristic đọc câu hỏi, đoán nó hỏi về báo cáo nào
+   (CĐKT/KQKD/LCTT/Thuyết minh số mấy/năm) rồi **soft-filter** Qdrant về đúng nhánh
+   đó; nếu lọc ra rỗng thì tự bỏ lọc (không bao giờ chặn cứng). (`financial_sections.py`)
+3. **Truy hồi lai (hybrid)** — câu hỏi được nhúng *dense + BM25*; Qdrant chạy hai
+   nhánh song song rồi hợp nhất bằng **RRF**, đã lọc theo `session_id` (+ filter
+   routing). Dense bắt ngữ nghĩa, BM25 bắt số/mã/năm chính xác.
+4. **Gộp parent + MMR (thay rerank)** — các row-group của cùng một bảng (và các
+   chunk prose cùng một mục thuyết minh nhỏ) được gộp về **một nguồn mang cả bảng/
+   cả mục** (small-to-big); rồi **MMR** chọn top-K vừa liên quan vừa không trùng lặp
+   (trị văn bản dài lặp từ). Nếu bật reranker thì cross-encoder thay cho bước MMR.
+5. **Sinh câu trả lời** — các chunk thành ngữ cảnh đánh số `[1]…[K]`; LLM được yêu
+   cầu **chỉ** trả lời dựa trên ngữ cảnh đó, kèm **đơn vị + kỳ/năm**, và trích dẫn số.
+6. Lượt người dùng + trợ lý ghi vào **cả** Postgres (bền) lẫn Redis (cửa sổ làm việc).
+7. Trả về câu trả lời + citation (tên tài liệu, trang, điểm, đoạn trích).
 
 ---
 
@@ -183,7 +190,8 @@ người cài mới; ai cần nhẹ RAM thì chỉnh như trên.
 
 ```
 src/rag/
-  chunking.py     Markdown → chunk gắn nhãn trang/heading (bảng giữ nguyên)
+  chunking.py     Markdown → chunk phân cấp: trang/heading + cây mục BCTC, bảng & mục thuyết minh có parent (small-to-big)
+  financial_sections.py  Nhận diện loại báo cáo (CĐKT/KQKD/LCTT/Thuyết minh) + định tuyến câu hỏi (heuristic VN)
   embeddings.py   Embedder: nhúng đa ngôn ngữ qua FastEmbed (ONNX, CPU); prefix query/passage cho E5
   vectorstore.py  VectorStore: collection Qdrant, lọc theo session, add/search/delete
   reranker.py     Reranker: cross-encoder qua FastEmbed (ONNX, CPU)
@@ -264,8 +272,10 @@ session đó trong Postgres và nhúng lại file vào Qdrant.
 
 ## 10. Hướng phát triển tiếp
 
-- **Truy hồi lai (hybrid)** — kết hợp dense với BM25 / sparse vector của Qdrant để
-  bắt khớp chính xác mã cổ phiếu, mã số, tên tài khoản.
+- ✅ **Truy hồi lai (hybrid)** — đã làm: dense (e5-large) + BM25 sparse, hợp nhất
+  RRF trong Qdrant để bắt khớp chính xác mã cổ phiếu, mã số, năm, số liệu. Thay
+  reranker bằng gộp-bảng + MMR (nhẹ trên CPU). Bước tiếp: thêm Contextual
+  Retrieval (Groq sinh ngữ cảnh per-chunk lúc index) nếu cần chất lượng cao hơn.
 - **Lọc theo tài liệu / theo năm** trong một session để tránh lẫn năm (payload
   Qdrant đã sẵn `doc_id`).
 - **Trả lời theo luồng (SSE)** cho cảm giác chat nhanh hơn.

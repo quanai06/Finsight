@@ -2,10 +2,13 @@
 
 A multilingual, CPU-only RAG stack (no GPU required):
 
-    documents ─chunk→ embed (bge-class, FastEmbed/ONNX) ─→ Qdrant vector store
-                                                                  │
-        question ─embed→ search top-N ─→ cross-encoder rerank ─→ top-K ─→ Groq LLM
+    documents ─chunk→ embed dense+sparse (FastEmbed/ONNX) ─→ Qdrant vector store
+                                                                    │
+        question ─embed→ hybrid search (dense+BM25, RRF) ─→ dedup+MMR ─→ Groq LLM
 
+Retrieval is hybrid: dense vectors for meaning + BM25 sparse for exact figures/
+codes, fused with Reciprocal Rank Fusion. A cross-encoder reranker is optional
+(off by default — MMR recovers most of its benefit far more cheaply on CPU).
 Components are swappable behind small classes: ``Embedder``, ``VectorStore``,
 ``Reranker``, ``GroqClient``, composed by ``RAGPipeline``.
 """

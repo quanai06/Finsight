@@ -12,7 +12,25 @@ the client gets an immediate 201 and the API stays responsive while indexing.
 from __future__ import annotations
 
 import logging
+import re
 from pathlib import Path
+
+_YEAR_RE = re.compile(r"\b(19|20)\d{2}\b")
+
+
+def _doc_year(filename: str, markdown: str) -> int | None:
+    m = _YEAR_RE.search(filename) or _YEAR_RE.search(markdown[:2000])
+    return int(m.group(0)) if m else None
+
+
+def _doc_context(filename: str, year: int | None) -> str:
+    """A short descriptor prepended to every chunk so retrieval can tell apart
+    otherwise-identical lines across reports/years (e.g. revenue in 2022 vs 2023).
+    """
+    ctx = f"Tài liệu: {filename}"
+    if year is not None:
+        ctx += f" · Năm: {year}"
+    return ctx
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, UploadFile
 
@@ -115,12 +133,15 @@ def _process_document(
     try:
         markdown, source = ingest_file(upload_path, enable_ocr=settings.enable_api_ocr)
         files.save_processed(sid, doc_id, markdown)
+        year = _doc_year(filename, markdown)
         chunks = chunk_markdown(
             markdown,
             doc_id=doc_id,
             doc_name=filename,
             chunk_size=settings.chunk_size,
             overlap=settings.chunk_overlap,
+            doc_context=_doc_context(filename, year),
+            year=year,
         )
 
         # Map embedding progress onto 5..95% (parse/chunk = first 5%, the final

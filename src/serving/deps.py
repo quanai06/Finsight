@@ -30,7 +30,12 @@ def get_files() -> FileStore:
 
 @lru_cache(maxsize=1)
 def get_embedder() -> Embedder:
-    return Embedder(get_settings().embed_model)
+    s = get_settings()
+    return Embedder(
+        s.embed_model,
+        sparse_model_name=s.sparse_model,
+        enable_sparse=s.use_hybrid,
+    )
 
 
 @lru_cache(maxsize=1)
@@ -62,4 +67,7 @@ def get_pipeline() -> RAGPipeline:
         reranker=get_reranker(),
         top_k=s.top_k,
         candidates=s.retrieve_candidates,
+        mmr_lambda=s.mmr_lambda,
+        score_threshold=s.score_threshold,
+        use_routing=s.use_routing,
     )
