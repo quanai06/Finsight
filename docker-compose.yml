@@ -3,8 +3,8 @@
 #   Qdrant    — dense vector store (bge-m3 embeddings)
 #   Redis     — short-term conversational memory (sliding window + TTL)
 #
-# Start:  docker compose -f docker/docker-compose.yml up -d
-# Stop:   docker compose -f docker/docker-compose.yml down
+# Start:  docker compose up -d
+# Stop:   docker compose down
 # Data persists in named volumes below.
 
 services:

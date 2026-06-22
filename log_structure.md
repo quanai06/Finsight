@@ -204,8 +204,7 @@ src/serving/
 scripts/
   migrate_to_postgres.py   one-off: dựng lại session file-based cũ sang Postgres + Qdrant
 
-docker/
-  docker-compose.yml       Postgres + Qdrant + Redis (named volume)
+docker-compose.yml         Postgres + Qdrant + Redis (named volume, ở root)
 
 frontend/
   src/api.js              fetch client nhỏ cho /api
@@ -241,7 +240,7 @@ frontend/
 
 ```bash
 # 1. Hạ tầng — Postgres + Qdrant + Redis
-docker compose -f docker/docker-compose.yml up -d
+docker compose up -d
 
 # 2. Cấu hình — đặt Groq key vào .env (đã git-ignore)
 cp .env.example .env        # rồi set GROQ_API_KEY

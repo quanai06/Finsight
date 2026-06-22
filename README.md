@@ -46,7 +46,7 @@ backend (FastAPI)  ──  src/serving  (sessions, uploads, chat API)
 ## 1. Infrastructure
 
 ```bash
-docker compose -f docker/docker-compose.yml up -d   # Postgres + Qdrant + Redis
+docker compose up -d   # Postgres + Qdrant + Redis
 ```
 
 ## 2. Configure
