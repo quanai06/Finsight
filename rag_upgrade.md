@@ -3,11 +3,7 @@
 > Ghi lại toàn bộ thay đổi trong đợt nâng cấp RAG (2026-06-22): từ **dense-only +
 > reranker** sang **hybrid + hierarchical chunking theo cấu trúc BCTC**, CPU-only,
 > **không dùng reranker** (rerank bị xem là quá nặng trên CPU).
-
-Mục tiêu: trị gốc rễ "hỏi số liệu mà không ra" và "chunking mù không hiểu cấu trúc
-báo cáo tài chính". Nguồn vấn đề lấy từ `error_upgrade.md` (mục B, RAG1–RAG15).
-
----
+Perceptual---
 
 ## 0. Tóm tắt 1 dòng
 
@@ -22,6 +18,10 @@ thay cho reranker; **chunker hiểu cấu trúc BCTC** (CĐKT/KQKD/LCTT/Thuyết
 - **Chuyển `docker-compose.yml` ra root** (xoá thư mục `docker/`). Lệnh giờ gọn:
   `docker compose up -d`. Đã cập nhật mọi tham chiếu trong `README.md`,
   `log_structure.md`, `.env`, `.env.example`.
+
+Mục tiêu: trị gốc rễ "hỏi số liệu mà không ra" và "chunking mù không hiểu cấu trúc
+báo cáo tài chính". Nguồn vấn đề lấy từ `error_upgrade.md` (mục B, RAG1–RAG15).
+
 
 ---
 
