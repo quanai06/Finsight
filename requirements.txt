@@ -11,11 +11,15 @@ pytest>=8.0                  # tests/ (OCR evaluation suite)
 fastapi>=0.115              # REST API
 uvicorn[standard]>=0.30     # ASGI server
 python-multipart>=0.0.9     # multipart/form-data file uploads
-httpx>=0.27                 # Groq (LLM) API calls
-numpy>=1.26                 # vector math
+pydantic>=2.0               # request/response schemas (src/serving/schemas.py)
+httpx>=0.27                 # Groq (LLM) + HF Inference (API embeddings) calls
+numpy>=1.26                 # vector math (MMR)
 
 # RAG stack: dense retrieval + rerank + vector DB + relational store + cache
-fastembed>=0.4              # bge-m3 embeddings + bge-reranker (ONNX, CPU)
+# Dense embeddings: local e5-large via FastEmbed (default) OR a hosted model
+# over HTTP (httpx, e.g. AITeamVN/Vietnamese_Embedding on the HF Inference API);
+# rerank uses jina-reranker-v2 (off by default). See src/rag/embeddings.py.
+fastembed>=0.4              # e5-large dense + BM25 sparse + jina reranker (ONNX, CPU)
 qdrant-client>=1.12,<1.13   # match the Qdrant server image in docker-compose
 sqlalchemy>=2.0             # ORM for Postgres (sessions/documents/chat)
 psycopg[binary]>=3.2        # PostgreSQL driver
