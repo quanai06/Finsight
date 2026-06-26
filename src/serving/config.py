@@ -64,9 +64,26 @@ class Settings:
         self.qdrant_collection = _env("QDRANT_COLLECTION", "finsight_chunks")
         self.redis_url = _env("REDIS_URL", "redis://localhost:6379/0")
 
-        # --- Embedding / rerank (FastEmbed, ONNX CPU) ---
+        # --- Embedding / rerank ---
+        # Dense backend: "local" = FastEmbed/ONNX on CPU (correct but ~99% of
+        # index time); "api" = hosted model over HTTP (dense moves off the box,
+        # indexing drops from ~11 min to seconds). Sparse BM25 stays local either
+        # way. Both default to 1024-dim, so switching needs no Qdrant schema
+        # change — but vectors from a different model are incompatible, so
+        # re-index existing documents after switching.
+        self.embed_backend = _env("FINSIGHT_EMBED_BACKEND", "local").lower()
         self.embed_model = _env("FINSIGHT_EMBED_MODEL", "intfloat/multilingual-e5-large")
         self.embed_dim = int(_env("FINSIGHT_EMBED_DIM", "1024"))
+        # API dense backend (used when FINSIGHT_EMBED_BACKEND=api). Default model
+        # is a BGE-M3 Vietnamese fine-tune (1024-dim, tops Vietnamese MTEB, no
+        # word segmentation). HF_API_TOKEN authenticates the Inference API; point
+        # FINSIGHT_API_EMBED_ENDPOINT at a dedicated/TEI endpoint to scale up.
+        self.hf_api_token = _env("HF_API_TOKEN", "") or _env("HF_TOKEN", "")
+        self.api_embed_model = _env(
+            "FINSIGHT_API_EMBED_MODEL", "AITeamVN/Vietnamese_Embedding"
+        )
+        self.api_embed_batch = int(_env("FINSIGHT_API_EMBED_BATCH", "32"))
+        self.api_embed_endpoint = _env("FINSIGHT_API_EMBED_ENDPOINT", "")
         # Hybrid retrieval: dense + sparse BM25 fused with RRF. BM25 is the lexical
         # layer that pins exact figures/codes/years that dense vectors blur.
         self.use_hybrid = _env("FINSIGHT_USE_HYBRID", "true").lower() == "true"
@@ -122,6 +139,11 @@ class Settings:
             if o.strip()
         ]
         self.max_upload_mb = int(_env("FINSIGHT_MAX_UPLOAD_MB", "50"))
+
+    @property
+    def active_embed_model(self) -> str:
+        """The dense model actually in use, given the selected backend."""
+        return self.api_embed_model if self.embed_backend == "api" else self.embed_model
 
 
 @lru_cache(maxsize=1)
