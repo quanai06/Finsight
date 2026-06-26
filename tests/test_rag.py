@@ -47,11 +47,92 @@ def test_doc_context_prefix_on_prose():
     assert len(chunks) > 1
 
 
-def _hit(text, *, parent_id="", parent_text="", score=0.0, vector=None):
+def _hit(text, *, parent_id="", parent_text="", score=0.0, vector=None, note_no=None):
     return Hit(
         text=text, doc_id="d", doc_name="n", page=1, heading="", score=score,
-        parent_id=parent_id, parent_text=parent_text, vector=vector or [],
+        parent_id=parent_id, parent_text=parent_text, note_no=note_no, vector=vector or [],
     )
+
+
+# ----------------------------------------------------- two-period year columns -
+_RELATED_PARTY_DOC = """<!-- ===== page 9 ===== -->
+## 37. Nghiệp vụ với các bên liên quan
+Đơn vị tính: triệu VND
+
+| Bên liên quan | Nội dung nghiệp vụ | Năm nay | Năm trước |
+| --- | --- | --- | --- |
+| Quỹ Thiện Tâm | Phải thu từ cung cấp dịch vụ | 162.253 | 324.079 |
+| Công ty SV | Chuyển nhượng bất động sản | - | 6.377.153 |
+"""
+
+_BALANCE_DOC = """<!-- ===== page 10 ===== -->
+## 37.2 Chi tiết các khoản phải thu và phải trả
+
+| Bên liên quan | Nội dung | Số cuối năm | Số đầu năm |
+| --- | --- | --- | --- |
+| Công ty SV | Phải thu chuyển nhượng | 505.325 | 3.601.722 |
+"""
+
+
+def test_flow_table_pins_year_columns_and_tags_value_kind():
+    chunks = chunk_markdown(_RELATED_PARTY_DOC, doc_id="d", doc_name="r.pdf", year=2022)
+    t = next(c for c in chunks if c.value_kind)
+    assert t.value_kind == "flow"
+    # "Năm nay/Năm trước" become absolute years so the LLM can't confuse 2021 for 2022
+    assert "Năm nay (2022)" in t.text
+    assert "Năm trước (2021)" in t.text
+    # a guidance note tells the reader to take only the asked year's column
+    assert "2021" in t.text and "chỉ lấy" in t.text.lower()
+
+
+def test_balance_table_tagged_as_balance_not_flow():
+    chunks = chunk_markdown(_BALANCE_DOC, doc_id="d", doc_name="r.pdf", year=2022)
+    t = next(c for c in chunks if c.value_kind)
+    assert t.value_kind == "balance"
+    assert "Số cuối năm (2022)" in t.text and "Số đầu năm (2021)" in t.text
+
+
+def test_year_columns_untouched_when_year_unknown():
+    chunks = chunk_markdown(_RELATED_PARTY_DOC, doc_id="d", doc_name="r.pdf")
+    t = next(c for c in chunks if "Năm nay" in c.text)
+    assert "Năm nay (" not in t.text  # no absolute year to pin to
+    assert t.value_kind == "flow"     # kind is still detected for routing
+
+
+def test_expand_note_assembles_whole_note_when_fragments_cluster():
+    from src.rag.pipeline import RAGPipeline, _MAX_PARENT_CHARS
+
+    p = RAGPipeline.__new__(RAGPipeline)
+    full = "WHOLE-NOTE " * ((_MAX_PARENT_CHARS // 11) + 10)  # exceeds the parent cap
+
+    class _VS:
+        def fetch_note(self, session_id, doc_id, note_no):
+            return full
+
+    p.vectorstore = _VS()
+    hits = [
+        _hit("frag1", score=0.9, note_no=37),
+        _hit("frag2", score=0.8, note_no=37),
+        _hit("unrelated prose", score=0.5),
+    ]
+    out = p._expand_note("s", hits)
+    assert out[0].text == full and out[0].note_no == 37  # whole note first
+    assert len(out) == 2                                  # two frags -> one note
+    assert any(h.text == "unrelated prose" for h in out)  # other hits preserved
+
+
+def test_expand_note_noop_when_note_already_small():
+    from src.rag.pipeline import RAGPipeline
+
+    p = RAGPipeline.__new__(RAGPipeline)
+
+    class _VS:
+        def fetch_note(self, *a):
+            return "short note that fits"
+
+    p.vectorstore = _VS()
+    hits = [_hit("frag", score=0.9, note_no=12), _hit("prose", score=0.4)]
+    assert p._expand_note("s", hits) == hits  # nothing gained -> unchanged
 
 
 def test_collapse_parents_merges_table_rowgroups_into_one_full_table():
@@ -146,6 +227,110 @@ class _FakeEmbedder:
     def embed_passages_iter(self, texts):
         for _ in texts:
             yield [0.0, 0.0]
+
+
+# --------------------------------------------------------------- api embedder -
+def _make_api_embedder(responses):
+    """Build an ApiEmbedder without sparse, with its HTTP client stubbed to pop
+    canned responses so dense embedding is tested without network/ONNX."""
+    from src.rag.embeddings import ApiEmbedder
+
+    emb = ApiEmbedder.__new__(ApiEmbedder)
+    emb.model_name = "test/model"
+    emb.batch_size = 2
+    emb.concurrency = 1  # deterministic order for the canned-response stub
+    emb.max_retries = 3
+    emb.backoff = 0  # no real sleeping in tests
+    emb._url = "http://stub"
+    emb._headers = {}
+    emb._sparse = None
+    calls = {"n": 0}
+
+    class _Resp:
+        def __init__(self, status, payload):
+            self.status_code = status
+            self._payload = payload
+            self.text = str(payload)
+
+        def json(self):
+            return self._payload
+
+    class _Client:
+        def post(self, url, headers=None, json=None):
+            r = responses[calls["n"]]
+            calls["n"] += 1
+            n = len(json["inputs"])
+            return _Resp(r["status"], r.get("vectors", [[0.0, 0.0]] * n))
+
+    emb._client = _Client()
+    return emb, calls
+
+
+def test_api_embedder_batches_and_aligns_passage_vectors():
+    # 3 texts, batch_size=2 -> two POSTs; vectors come back in input order.
+    emb, calls = _make_api_embedder(
+        [
+            {"status": 200, "vectors": [[1.0, 0.0], [0.0, 1.0]]},
+            {"status": 200, "vectors": [[0.5, 0.5]]},
+        ]
+    )
+    out = emb.embed_passages(["a", "b", "c"])
+    assert out == [[1.0, 0.0], [0.0, 1.0], [0.5, 0.5]]
+    assert calls["n"] == 2  # batched into two requests
+
+
+def test_api_embedder_concurrent_batches_preserve_order():
+    # batch_size=2, concurrency=3 over 5 texts -> 3 batches run concurrently but
+    # vectors must come back aligned with the input order. Stub derives each
+    # vector from its input so out-of-order execution can't hide a misalignment.
+    from src.rag.embeddings import ApiEmbedder
+
+    emb = ApiEmbedder.__new__(ApiEmbedder)
+    emb.batch_size = 2
+    emb.concurrency = 3
+    emb.max_retries = 1
+    emb.backoff = 0
+    emb._url = "http://stub"
+    emb._headers = {}
+    emb._sparse = None
+
+    class _Resp:
+        status_code = 200
+
+        def __init__(self, inputs):
+            self._inputs = inputs
+
+        def json(self):
+            return [[float(ord(t[0]))] for t in self._inputs]
+
+    class _Client:
+        def post(self, url, headers=None, json=None):
+            return _Resp(json["inputs"])
+
+    emb._client = _Client()
+    out = emb.embed_passages(["a", "b", "c", "d", "e"])
+    assert out == [[97.0], [98.0], [99.0], [100.0], [101.0]]
+
+
+def test_api_embedder_retries_transient_then_succeeds():
+    from src.rag.embeddings import EmbeddingError
+
+    emb, calls = _make_api_embedder(
+        [
+            {"status": 503},  # cold start -> retry
+            {"status": 429},  # rate limit -> retry
+            {"status": 200, "vectors": [[1.0, 2.0]]},
+        ]
+    )
+    assert emb.embed_query("q") == [1.0, 2.0]
+    assert calls["n"] == 3
+    # a non-retryable 4xx (bad token) raises immediately
+    emb2, _ = _make_api_embedder([{"status": 401}])
+    try:
+        emb2.embed_query("q")
+        assert False, "expected EmbeddingError on 401"
+    except EmbeddingError:
+        pass
 
 
 def test_vectorstore_add_stops_early_when_cancelled():

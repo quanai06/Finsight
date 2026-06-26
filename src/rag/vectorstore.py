@@ -45,6 +45,8 @@ class Hit:
     ordinal: int = 0
     parent_id: str = ""
     parent_text: str = ""
+    note_no: int | None = None  # thuyết-minh note, for whole-note expansion
+    value_kind: str = ""        # "flow" | "balance" | "" (transactions vs balances)
     vector: list[float] = field(default_factory=list)  # dense, for MMR
 
 
@@ -171,6 +173,7 @@ class VectorStore:
                         "section_id": c.section_id,
                         "parent_section_id": c.parent_section_id,
                         "year": c.year,
+                        "value_kind": c.value_kind,
                     },
                 )
             )
@@ -293,8 +296,63 @@ class VectorStore:
                 with_vectors=[_DENSE],
             )
 
+        return self._to_hits(response.points)
+
+    def fetch_note(
+        self, session_id: str, doc_id: str, note_no: int, *, max_chars: int = 12000
+    ) -> str:
+        """Assemble the full text of one thuyết-minh note, in document order.
+
+        A long note (e.g. related-party transactions) is split across many table
+        chunks, so hybrid search only ever returns a few fragments. For a question
+        that targets a whole note, the LLM needs the *entire* note to be complete;
+        this scrolls every chunk of (doc, note_no), orders them by ``ordinal`` and
+        joins their parent tables (deduped, capped) into one block.
+        """
+        flt = models.Filter(
+            must=[
+                models.FieldCondition(
+                    key="session_id", match=models.MatchValue(value=session_id)
+                ),
+                models.FieldCondition(
+                    key="doc_id", match=models.MatchValue(value=doc_id)
+                ),
+                models.FieldCondition(
+                    key="note_no", match=models.MatchValue(value=note_no)
+                ),
+            ]
+        )
+        points, _ = self.client.scroll(
+            self.collection,
+            scroll_filter=flt,
+            with_payload=True,
+            with_vectors=False,
+            limit=400,
+        )
+        rows = sorted(
+            ((p.payload or {}).get("ordinal", 0), p.payload or {}) for p in points
+        )
+        parts: list[str] = []
+        seen: set[str] = set()
+        total = 0
+        for _, payload in rows:
+            # Prefer the full parent table over the row-group fragment, and skip a
+            # table we've already emitted (siblings share the same parent_text).
+            text = payload.get("parent_text") or payload.get("text", "")
+            key = payload.get("parent_id") or text[:80]
+            if not text or key in seen:
+                continue
+            seen.add(key)
+            parts.append(text)
+            total += len(text)
+            if total >= max_chars:
+                break
+        return "\n\n".join(parts)[:max_chars]
+
+    @staticmethod
+    def _to_hits(points: list) -> list[Hit]:
         hits: list[Hit] = []
-        for p in response.points:
+        for p in points:
             payload = p.payload or {}
             vec = p.vector or {}
             dense = vec.get(_DENSE, []) if isinstance(vec, dict) else vec
@@ -309,6 +367,8 @@ class VectorStore:
                     ordinal=payload.get("ordinal", 0),
                     parent_id=payload.get("parent_id", ""),
                     parent_text=payload.get("parent_text", ""),
+                    note_no=payload.get("note_no"),
+                    value_kind=payload.get("value_kind", ""),
                     vector=list(dense) if dense else [],
                 )
             )

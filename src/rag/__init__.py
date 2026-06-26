@@ -14,7 +14,7 @@ Components are swappable behind small classes: ``Embedder``, ``VectorStore``,
 """
 
 from .chunking import Chunk, chunk_markdown
-from .embeddings import Embedder
+from .embeddings import ApiEmbedder, Embedder, EmbeddingError
 from .llm import GroqClient, LLMError
 from .pipeline import RAGPipeline, RetrievedChunk
 from .reranker import Reranker
@@ -24,6 +24,8 @@ __all__ = [
     "Chunk",
     "chunk_markdown",
     "Embedder",
+    "ApiEmbedder",
+    "EmbeddingError",
     "VectorStore",
     "Hit",
     "Reranker",

@@ -39,6 +39,16 @@ _SYSTEM_PROMPT = (
     "in the context. If the context spans several periods, report only the "
     "period the question asks about; if the unit or period is missing, say so "
     "rather than guessing.\n"
+    "Financial tables usually have TWO value columns for two periods. Read the "
+    "column labels carefully and report ONLY the column whose year matches the "
+    "question — never read a value from the other year's column. 'Năm nay (YYYY)' "
+    "is the current year and 'Năm trước (YYYY)' the prior year; 'Số cuối năm' is "
+    "the end-of-period balance and 'Số đầu năm' the start-of-period balance. If a "
+    "row's value sits under the prior-year column, it is NOT a current-year figure.\n"
+    "Distinguish transactions/amounts arising DURING the year (giao dịch, nghiệp "
+    "vụ, số phát sinh — the 'Năm nay/Năm trước' tables) from outstanding BALANCES "
+    "at a point in time (số dư, 'Số cuối năm/Số đầu năm'). Answer the kind the "
+    "question asks about and do not mix the two.\n"
     "Cite the sources you used with their bracket numbers, e.g. [1]. Keep answers "
     "concise and factual, report numbers exactly as they appear, and answer in "
     "the language of the question."
@@ -131,6 +141,8 @@ def _collapse_parents(hits: list[Hit]) -> list[Hit]:
                 score=h.score,
                 ordinal=h.ordinal,
                 parent_id=h.parent_id,
+                note_no=h.note_no,
+                value_kind=h.value_kind,
                 vector=h.vector,
             )
             seen[h.parent_id] = kept
@@ -180,6 +192,7 @@ class RAGPipeline:
         score_threshold: float = 0.0,
         use_routing: bool = True,
         use_graph: bool = False,
+        use_whole_note: bool = True,
         known_years: list[int] | None = None,
     ) -> None:
         self.llm = llm
@@ -190,6 +203,10 @@ class RAGPipeline:
         self.mmr_lambda = mmr_lambda
         self.score_threshold = score_threshold
         self.use_routing = use_routing
+        # Whole-note expansion: a question about a long thuyết-minh note needs the
+        # entire note (split across many table chunks) to be complete, so assemble
+        # it instead of answering from a few retrieved fragments.
+        self.use_whole_note = use_whole_note
         # Graph-RAG cross-period fan-out: when a question spans several years,
         # search each year and merge so the context covers every period.
         self.use_graph = use_graph
@@ -270,6 +287,9 @@ class RAGPipeline:
         else:
             ranked = _mmr(hits, self.top_k, self.mmr_lambda)
 
+        if self.use_whole_note and not multi:
+            ranked = self._expand_note(session_id, ranked)
+
         return [
             RetrievedChunk(
                 rank=i + 1,
@@ -282,6 +302,33 @@ class RAGPipeline:
             )
             for i, h in enumerate(ranked)
         ]
+
+    def _expand_note(self, session_id: str, hits: list[Hit]) -> list[Hit]:
+        """If the top hits cluster on one thuyết-minh note, replace that note's
+        fragments with the whole note assembled in document order, so the LLM sees
+        every row (e.g. all related-party transactions, not just the matched few).
+        Other hits pass through untouched."""
+        counts: dict[tuple[str, int], int] = {}
+        rep: dict[tuple[str, int], Hit] = {}
+        for h in hits:
+            if h.note_no is not None and h.doc_id:
+                key = (h.doc_id, h.note_no)
+                counts[key] = counts.get(key, 0) + 1
+                rep.setdefault(key, h)
+        if not counts:
+            return hits
+        key = max(counts, key=lambda k: counts[k])
+        full = self.vectorstore.fetch_note(session_id, key[0], key[1])
+        # Nothing gained if the note already fits in a single collapsed parent.
+        if not full or len(full) <= _MAX_PARENT_CHARS:
+            return hits
+        r = rep[key]
+        note_hit = Hit(
+            text=full, doc_id=r.doc_id, doc_name=r.doc_name, page=r.page,
+            heading=r.heading, score=r.score, note_no=key[1], value_kind=r.value_kind,
+        )
+        others = [h for h in hits if (h.doc_id, h.note_no) != key]
+        return [note_hit, *others]
 
     def answer(
         self,

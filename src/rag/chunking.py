@@ -37,6 +37,64 @@ _TABLE_SEP_RE = re.compile(r"^\s*\|?\s*:?-{2,}")
 # "Đơn vị tính: triệu đồng" / "Unit: million VND" — capture the unit phrase.
 _UNIT_RE = re.compile(r"(đơn\s*vị\s*tính|unit)\s*[:\.]?\s*(.+)", re.IGNORECASE)
 
+# Vietnamese financial tables put two periods side by side. The header words tell
+# us which is which, and crucially whether the columns are *flows* (transactions
+# during the year) or *balances* (a point-in-time snapshot) — a distinction the
+# OCR'd table text loses and the LLM otherwise guesses wrong:
+#   * "Năm nay" / "Năm trước"        -> flow:    current year vs prior year
+#   * "Số cuối năm/kỳ" / "Số đầu năm/kỳ" -> balance: end-of-period vs start-of-period
+_YEAR_NOW_RE = re.compile(r"năm\s*nay", re.IGNORECASE)
+_YEAR_PREV_RE = re.compile(r"năm\s*trước", re.IGNORECASE)
+_BAL_END_RE = re.compile(r"số\s*cuối\s*(năm|kỳ)", re.IGNORECASE)
+_BAL_START_RE = re.compile(r"số\s*đầu\s*(năm|kỳ)", re.IGNORECASE)
+
+
+def _annotate_year_columns(
+    lines: list[str], year: int | None
+) -> tuple[list[str], str, str]:
+    """Pin the two period columns of a financial table to absolute years.
+
+    Returns ``(lines, note, value_kind)``. When the table's header carries a
+    current/prior period pair and the document year is known, the header cells
+    are rewritten to include the absolute year (e.g. "Năm trước" -> "Năm trước
+    (2021)") and a one-line ``note`` is produced so the LLM reads the right
+    column. ``value_kind`` is ``"flow"`` (giao dịch/phát sinh trong năm) or
+    ``"balance"`` (số dư cuối/đầu kỳ), or ``""`` when no pair is detected.
+    """
+    text = "\n".join(lines)
+    is_flow = bool(_YEAR_NOW_RE.search(text) and _YEAR_PREV_RE.search(text))
+    is_bal = bool(_BAL_END_RE.search(text) and _BAL_START_RE.search(text))
+    if not (is_flow or is_bal) or year is None:
+        kind = "flow" if is_flow else ("balance" if is_bal else "")
+        return lines, "", kind
+
+    cur, prev = year, year - 1
+    out: list[str] = []
+    for ln in lines:
+        if is_flow:
+            ln = _YEAR_NOW_RE.sub(f"Năm nay ({cur})", ln)
+            ln = _YEAR_PREV_RE.sub(f"Năm trước ({prev})", ln)
+        if is_bal:
+            ln = _BAL_END_RE.sub(rf"Số cuối \1 ({cur})", ln)
+            ln = _BAL_START_RE.sub(rf"Số đầu \1 ({prev})", ln)
+        out.append(ln)
+
+    if is_flow:
+        note = (
+            f"Bảng có hai cột số liệu: cột năm nay là năm {cur}, cột năm trước là "
+            f"năm {prev} (giao dịch/số phát sinh trong năm). Chỉ lấy đúng cột của "
+            f"năm được hỏi, không lẫn hai cột."
+        )
+        kind = "flow"
+    else:
+        note = (
+            f"Bảng có hai cột số liệu: số cuối kỳ là cuối năm {cur}, số đầu kỳ là "
+            f"đầu năm {cur} (tức cuối năm {prev}) — đây là SỐ DƯ tại thời điểm, "
+            f"không phải giao dịch phát sinh. Chỉ lấy đúng cột của năm được hỏi."
+        )
+        kind = "balance"
+    return out, note, kind
+
 
 @dataclass(slots=True)
 class Chunk:
@@ -54,6 +112,7 @@ class Chunk:
     section_id: str = ""        # stable id of the enclosing heading section
     parent_section_id: str = ""  # id of the parent section in the tree
     year: int | None = None     # document period, for per-year filtering
+    value_kind: str = ""        # table figures: "flow" | "balance" | "" (see chunking)
     metadata: dict = field(default_factory=dict)
 
 
@@ -201,19 +260,25 @@ def _table_header(lines: list[str]) -> tuple[str, int]:
     return "\n".join(header), body_start
 
 
-def _split_table(block: _Block, size: int) -> tuple[list[str], str]:
-    """Split a table into row-groups (header repeated), returning (children, parent).
+def _split_table(
+    block: _Block, size: int, year: int | None = None
+) -> tuple[list[str], str, str]:
+    """Split a table into row-groups (header repeated), returning
+    ``(children, parent, value_kind)``.
 
     ``parent`` is the whole table prefixed with its caption + unit so a retrieved
-    row-group can be expanded to the full table at generation time.
+    row-group can be expanded to the full table at generation time. Two-period
+    columns are pinned to absolute years first (see ``_annotate_year_columns``),
+    and ``value_kind`` flags whether the figures are flows or balances.
     """
-    lines = block.lines
+    lines, year_note, value_kind = _annotate_year_columns(block.lines, year)
     header_text, body_start = _table_header(lines)
     # caption/unit context line sits above the header so it travels with the table;
     # skip anything already in the header or heading, and any near-duplicate
-    # (the "caption" is often the unit line itself).
+    # (the "caption" is often the unit line itself). The year-column note is added
+    # last so the LLM always sees which column is which year.
     ctx_parts: list[str] = []
-    for p in (block.caption, block.unit):
+    for p in (block.caption, block.unit, year_note):
         if not p or p in header_text or p in block.heading:
             continue
         if any(p in q or q in p for q in ctx_parts):
@@ -225,7 +290,7 @@ def _split_table(block: _Block, size: int) -> tuple[list[str], str]:
     rows = lines[body_start:]
     parent = f"{ctx}\n" + "\n".join(lines) if ctx else "\n".join(lines)
     if not rows:
-        return ([head_block] if head_block.strip() else []), parent
+        return ([head_block] if head_block.strip() else []), parent, value_kind
 
     budget = max(size - len(head_block), 200)
     chunks: list[str] = []
@@ -240,7 +305,7 @@ def _split_table(block: _Block, size: int) -> tuple[list[str], str]:
         cur_len += len(row) + 1
     if group:
         chunks.append(head_block + "\n" + "\n".join(group))
-    return chunks, parent
+    return chunks, parent, value_kind
 
 
 @dataclass(slots=True)
@@ -328,7 +393,7 @@ def chunk_markdown(
         budget = max(chunk_size - len(prefix), 200)
 
         if block.kind == "table":
-            pieces, table_parent = _split_table(block, budget)
+            pieces, table_parent, value_kind = _split_table(block, budget, year)
             table_no += 1
             parent_id = f"{doc_id}:t{table_no}"   # each table is its own parent
             parent_text = table_parent
@@ -338,6 +403,7 @@ def chunk_markdown(
             section_parent = section_parents.get(sec.section_id, "")
             parent_id = sec.section_id if section_parent else ""
             parent_text = section_parent
+            value_kind = ""
 
         for piece in pieces:
             text = f"{prefix}\n\n{piece}" if prefix else piece
@@ -356,6 +422,7 @@ def chunk_markdown(
                     section_id=sec.section_id,
                     parent_section_id=sec.parent_section_id,
                     year=year,
+                    value_kind=value_kind,
                 )
             )
             ordinal += 1

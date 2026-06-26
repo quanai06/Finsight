@@ -8,7 +8,14 @@ from __future__ import annotations
 
 from functools import lru_cache
 
-from src.rag import Embedder, GroqClient, RAGPipeline, Reranker, VectorStore
+from src.rag import (
+    ApiEmbedder,
+    Embedder,
+    GroqClient,
+    RAGPipeline,
+    Reranker,
+    VectorStore,
+)
 
 from .config import get_settings
 from .db import Database
@@ -29,8 +36,23 @@ def get_files() -> FileStore:
 
 
 @lru_cache(maxsize=1)
-def get_embedder() -> Embedder:
+def get_embedder() -> Embedder | ApiEmbedder:
     s = get_settings()
+    if s.embed_backend == "api":
+        if not s.hf_api_token:
+            raise RuntimeError(
+                "FINSIGHT_EMBED_BACKEND=api but no HF_API_TOKEN set (.env)."
+            )
+        return ApiEmbedder(
+            s.api_embed_model,
+            api_key=s.hf_api_token,
+            sparse_model_name=s.sparse_model,
+            enable_sparse=s.use_hybrid,
+            batch_size=s.api_embed_batch,
+            concurrency=s.api_embed_concurrency,
+            threads=s.embed_threads or None,
+            endpoint=s.api_embed_endpoint or None,
+        )
     return Embedder(
         s.embed_model,
         sparse_model_name=s.sparse_model,
@@ -73,4 +95,5 @@ def get_pipeline() -> RAGPipeline:
         score_threshold=s.score_threshold,
         use_routing=s.use_routing,
         use_graph=s.use_graph,
+        use_whole_note=s.use_whole_note,
     )

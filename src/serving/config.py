@@ -83,6 +83,10 @@ class Settings:
             "FINSIGHT_API_EMBED_MODEL", "AITeamVN/Vietnamese_Embedding"
         )
         self.api_embed_batch = int(_env("FINSIGHT_API_EMBED_BATCH", "32"))
+        # Concurrent in-flight embedding requests. Each hosted request over a
+        # batch of long chunks is slow and compute-bound, so overlapping requests
+        # is the main speed lever; lower this if the provider returns 429.
+        self.api_embed_concurrency = int(_env("FINSIGHT_API_EMBED_CONCURRENCY", "4"))
         self.api_embed_endpoint = _env("FINSIGHT_API_EMBED_ENDPOINT", "")
         # Hybrid retrieval: dense + sparse BM25 fused with RRF. BM25 is the lexical
         # layer that pins exact figures/codes/years that dense vectors blur.
@@ -117,6 +121,10 @@ class Settings:
         # Graph-RAG cross-period fan-out: questions spanning several years search
         # each year and merge, so cross-file/cross-year answers see every period.
         self.use_graph = _env("FINSIGHT_USE_GRAPH", "true").lower() == "true"
+        # Whole-note expansion: questions about a long thuyết-minh note (e.g. 37
+        # related-party transactions) get the entire note assembled, not just the
+        # few retrieved fragments — fixes incomplete answers on multi-page notes.
+        self.use_whole_note = _env("FINSIGHT_USE_WHOLE_NOTE", "true").lower() == "true"
         # Strict-grounding cutoff on the top retrieval score; 0 disables it (a
         # non-zero value can reject BM25-only exact matches — tune per corpus).
         self.score_threshold = float(_env("FINSIGHT_SCORE_THRESHOLD", "0.0"))

@@ -33,7 +33,14 @@ xóa. (Đây là **BE2** trong `error_upgrade.md`, lộ rõ vì embedding quá c
 
 ---
 
-## BUG #2 — Index một file mất ~8–11 phút — ⚠️ ĐÃ GIẢM NHẸ + CÓ KHUYẾN NGHỊ
+## BUG #2 — Index một file mất ~8–11 phút — ✅ ĐÃ GIẢI QUYẾT (chuyển dense sang API)
+
+> **Cập nhật 2026-06-26:** đã thêm backend embedding qua **API** (`ApiEmbedder`,
+> mặc định `AITeamVN/Vietnamese_Embedding` trên HF Inference API) — dense ra khỏi
+> CPU, index 1 file từ ~11.5 phút xuống **vài giây**. Sparse BM25 vẫn local. Bật
+> bằng `FINSIGHT_EMBED_BACKEND=api` trong `.env`. Chi tiết: **`embedding.md`**.
+> Phần phân tích bên dưới giữ lại làm bối cảnh đo lường gốc.
+
 
 ### Đo per-phase thực tế (file 2021, 284 chunk)
 | Pha | Thời gian | % | ms/chunk |
@@ -97,7 +104,5 @@ Chunk thật dài (gần 512 token, nhiều bảng) nên còn chậm hơn benchm
 | --- | --- |
 | Bug #1 cancel | ✅ Fixed + test |
 | Bug #2 warm-up / timing log / config | ✅ Done |
-| Bug #2 đổi model nhanh (MiniLM / int8) | ⏳ Chờ bạn quyết |
-| Test suite | ✅ 23/23 pass |
-
-Tất cả đang ở **working tree, chưa commit**.
+| Bug #2 — dense embedding sang API (đòn bẩy tốc độ thật) | ✅ Done (xem `embedding.md`) |
+| Test suite | ✅ Pass (`tests/test_rag.py`, gồm test `ApiEmbedder`) |

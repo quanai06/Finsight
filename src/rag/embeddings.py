@@ -161,6 +161,7 @@ class ApiEmbedder:
         sparse_model_name: str = "Qdrant/bm25",
         enable_sparse: bool = True,
         batch_size: int = 32,
+        concurrency: int = 4,
         timeout: float = 60.0,
         max_retries: int = 5,
         backoff: float = 1.0,
@@ -173,6 +174,11 @@ class ApiEmbedder:
             raise EmbeddingError("ApiEmbedder requires an API key (set HF_API_TOKEN).")
         self.model_name = model_name
         self.batch_size = batch_size
+        # A single hosted request over many long chunks is compute-bound and slow
+        # (~13-26s/batch on HF serverless), so the win is overlapping requests, not
+        # a bigger batch. Keep `concurrency` requests in flight; raise it for speed,
+        # lower it if the provider starts returning 429 (rate limit).
+        self.concurrency = max(1, concurrency)
         self.max_retries = max_retries
         self.backoff = backoff
         self._url = endpoint or self._HF_ROUTER.format(model=model_name)
@@ -228,12 +234,37 @@ class ApiEmbedder:
     def embed_passages_iter(self, texts: list[str]) -> Iterator[list[float]]:
         """Embed in batches and yield one vector at a time (aligned with
         ``texts``), so the vector store keeps its bounded-memory / progress /
-        cancel-between-batches behaviour unchanged."""
+        cancel behaviour unchanged.
+
+        Batches run **concurrently** (up to ``self.concurrency`` in flight) but
+        results are yielded **in order**: a sliding window of futures hides the
+        per-request latency without buffering every vector or reordering. When
+        the consumer stops pulling (e.g. a cancelled upload), no further batches
+        are submitted — at most ``concurrency`` already-inflight ones finish.
+        """
         if not texts:
             return
-        for i in range(0, len(texts), self.batch_size):
-            for vec in self._embed_batch(texts[i : i + self.batch_size]):
-                yield vec
+        bs = self.batch_size
+        batches = [texts[i : i + bs] for i in range(0, len(texts), bs)]
+        if self.concurrency == 1 or len(batches) == 1:
+            for b in batches:
+                yield from self._embed_batch(b)
+            return
+
+        from concurrent.futures import ThreadPoolExecutor
+
+        with ThreadPoolExecutor(max_workers=self.concurrency) as pool:
+            inflight: dict[int, object] = {}
+            nxt = 0
+            for _ in range(min(self.concurrency, len(batches))):
+                inflight[nxt] = pool.submit(self._embed_batch, batches[nxt])
+                nxt += 1
+            for i in range(len(batches)):
+                vecs = inflight.pop(i).result()  # type: ignore[attr-defined]
+                if nxt < len(batches):  # top the window back up, in order
+                    inflight[nxt] = pool.submit(self._embed_batch, batches[nxt])
+                    nxt += 1
+                yield from vecs
 
     def embed_passages(self, texts: list[str]) -> list[list[float]]:
         return list(self.embed_passages_iter(texts))
