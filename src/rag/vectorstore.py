@@ -25,7 +25,7 @@ from dataclasses import dataclass, field
 from qdrant_client import QdrantClient, models
 
 from .chunking import Chunk
-from .embeddings import Embedder
+from .embeddings import ApiEmbedder, Embedder
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ class Hit:
 class VectorStore:
     def __init__(
         self,
-        embedder: Embedder,
+        embedder: Embedder | ApiEmbedder,
         *,
         url: str,
         collection: str,
